@@ -23,7 +23,7 @@ zero_crossings = librosa.zero_crossings(y, pad = False)
 print(zero_crossings) # [False False False ... False False False]
 print(sum(zero_crossings)) # 5413
 
-n0 = 8000
+n0 = 9000
 n1 = 9040
 
 plt.figure(figsize = (16, 6))
