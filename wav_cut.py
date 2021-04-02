@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 y, sr = librosa.load(
-    'c:/nmb/nmb_data/testvoice_주형.wav'
+    'c:/nmb/nmb_data/testvoice_영리.wav'
 )
 
 print(len(y))
@@ -25,4 +25,4 @@ y2 = y[:sec]
 
 print(len(y2))
 
-sf.write('c:/nmb/nmb_data/주형.wav', y2, sr)
+sf.write('c:/nmb/nmb_data/영리.wav', y2, sr)
