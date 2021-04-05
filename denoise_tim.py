@@ -8,19 +8,22 @@
 # 6. The mask is smoothed with a filter over frequency and time
 # 7. The mask is appled to the FFT of the signal, and is inverted
 
-
+# import libraries
 import scipy.signal
 import numpy as np
 import matplotlib.pyplot as plt
 import librosa
+import librosa.display
+import soundfile as sf
 
-# 예제 파일 로드
+# load file
 filepath = 'c:/nmb/nmb_data/M2_low.wav'
 data, rate = librosa.load(
     filepath
 )
 
-print(data)
+print('data : ', len(data)) # 110250
+print('rate : ', rate) # 22050
 
 def fftnoise(f):
     f = np.array(f, dtype = 'complex') # 복수소형의 array 생성
@@ -32,21 +35,21 @@ def fftnoise(f):
     return np.fft.ifft(f).real
 
 def band_limited_noise(min_freq, max_freq, samples = 1024, samplerate = 1):
-    freqs = np.abs(np.fft.fftfreq(samples, 1 / samplerate))
-    f = np.zeros(samples)
-    f[np.logical_and(freqs >= min_freq, freqs <= max_freq)] = 1
-    return fftnoise(f)
+    freqs = np.abs(np.fft.fftfreq(samples, 1 / samplerate)) # 푸리에 변환한 주파수의 값을 가짐
+    f = np.zeros(samples) # 0 으로 이루어진 array 를 samples 갯수 (여기선 1024) 만듬
+    f[np.logical_and(freqs >= min_freq, freqs <= max_freq)] = 1 # 논리 연산자를 이용하여 freqs 를 정규화 시킴
+    return fftnoise(f) # frequency 를 정규화 해줌
 
 noise_len = 5 # second
-noise = band_limited_noise(
+noise = band_limited_noise( # 주파수 영역대를 4000~12000 로 정규화 시킴
     min_freq = 4000, 
     max_freq = 12000, 
     samples = len(data),
     samplerate = rate) * 10
 noise_clip = noise[:rate * noise_len] # data 값의 길이를 구하기 위함
-audio_clip_band_limited = data + noise
+audio_clip_band_limited = data + noise # original data 와 정규화 시킨 noise 를 결합 시킴
 
-# 함수 정의
+# define function
 def stft(y, n_fft, hop_length, win_length):
     return librosa.stft(
         y = y, n_fft = n_fft , hop_length = hop_length, win_length = win_length
@@ -61,7 +64,7 @@ def amp_to_db(x):
     ) # amplitude 를 dB 로 바꿔 시각화하는 데에 용이
 
 def db_to_amp(x,):
-    return librosa.cor.db_to_amplitude(x, ref = 1.0) # dB 를 amplitude 로 바꿈
+    return librosa.core.db_to_amplitude(x, ref = 1.0) # dB 를 amplitude 로 바꿈
 
 def removeNoise(
     audio_clip,
@@ -76,20 +79,34 @@ def removeNoise(
     verbose = False,
     visual = False
 ):
+
+    # Args:
+    #     audio_clip (array): The first parameter. / 기존 음성
+    #     noise_clip (array): The second parameter. / 노이즈 음성
+    #     n_grad_freq (int): how many frequency channels to smooth over with the mask. / 필터를 거친 후의 주파수 채널이 얼마만큼 smooth 한가(?)
+    #     n_grad_time (int): how many time channels to smooth over with the mask. / 필터를 거친 후의 시간 채널이 얼마만큼 smooth 한가(?)
+    #     n_fft (int): number audio of frames between STFT columns.
+    #     win_length (int): Each frame of audio is windowed by `window()`. The window will be of length `win_length` and then padded with zeros to match `n_fft`..
+    #     hop_length (int):number audio of frames between STFT columns.
+    #     n_std_thresh (int): how many standard deviations louder than the mean dB of the noise (at each frequency level) to be considered signal
+    #     prop_decrease (float): To what extent should you decrease noise (1 = all, 0 = none) / denoise 를 얼마만큼 실행시킬 것인가
+    #     visual (bool): Whether to plot the steps of the algorithm / 시각화 관련
+
     if verbose:
         noise_stft = stft(noise_clip, n_fft, hop_length, win_length)
         noise_stft_db = amp_to_db(np.abs(noise_stft))
-        mean_freq_noise = np.mean(noise_stft_db, axis = 1)
-        std_freq_noise = np.std(noise_stft_db, axis = 1)
+        mean_freq_noise = np.mean(noise_stft_db, axis = 1) # stft 된 noise 의 평균
+        std_freq_noise = np.std(noise_stft_db, axis = 1) #  stft 된 noise 의 표준편차
         noise_thresh = mean_freq_noise + std_freq_noise * n_std_thresh
+        print('noise_stft pass')
     
     if verbose:
         sig_stft = stft(audio_clip, n_fft, hop_length, win_length)
         sig_stft_db = amp_to_db(np.abs(sig_stft))
-
+        print('sig_stft pass')
     mask_gain_dB = np.min(amp_to_db(np.abs(sig_stft)))
 
-    smooting_filter = np.outer(
+    smoothing_filter = np.outer(
         np.concatenate(
             [
                 np.linspace(0, 1, n_grad_freq + 1, endpoint = False),
@@ -110,7 +127,7 @@ def removeNoise(
         np.reshape(noise_thresh, [1, len(mean_freq_noise)]),
         np.shape(sig_stft_db)[1],
         axis = 0,
-    ).T
+    ).T # .T == np.transpose()
     
     sig_mask = sig_stft_db < db_thresh
 
@@ -120,20 +137,55 @@ def removeNoise(
             + np.ones(np.shape(mask_gain_dB)) * mask_gain_dB
         )
         sig_img_masked = np.imag(sig_stft) * (1 - sig_mask)
-        sig_stft_amp = (db_to_amp(sig_stft_db_masked * np.sing(sig_stft)) + (
+        sig_stft_amp = (db_to_amp(sig_stft_db_masked * np.sign(sig_stft)) + (
             1j * sig_img_masked
         ))
+        print('sig_stft_db pass')
     
     if verbose:
         recoverd_signal = istft(sig_stft_amp, hop_length, win_length)
         recoverd_spec = amp_to_db(
             np.abs(stft(recoverd_signal, n_fft, hop_length, win_length))
         )
+        print('recoverd_signal pass')
     if verbose:
         print("finish")
+    return recoverd_signal
 
 output = removeNoise(
     audio_clip = audio_clip_band_limited,
     noise_clip = noise_clip,
-    verbose = True 
+    verbose = True
 )
+
+print(type(output))
+print(output)
+
+# save output file to wav
+sf.write(
+    'c:/nmb/nmb_data/output.wav', output, rate
+)
+
+# visualization
+fig = plt.figure(figsize = (16, 6))
+ax1 = fig.add_subplot(2, 2, 1)
+ax2 = fig.add_subplot(2, 2, 2)
+ax3 = fig.add_subplot(2, 2, 3)
+
+librosa.display.waveplot(
+    data, sr = rate, ax = ax1
+)
+ax1.set(title = 'original')
+
+librosa.display.waveplot(
+    audio_clip_band_limited, sr = rate, ax = ax2
+)
+ax2.set(title = 'noise')
+
+librosa.display.waveplot(
+    output, sr = rate, ax = ax3
+)
+ax3.set(title = 'denoise')
+
+fig.tight_layout()
+plt.show()
