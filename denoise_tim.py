@@ -25,14 +25,14 @@ data, rate = librosa.load(
 print('data : ', len(data)) # 110250
 print('rate : ', rate) # 22050
 
-def fftnoise(f):
+def fftnoise(f): # 노이즈 생성을 fft 시킴
     f = np.array(f, dtype = 'complex') # 복수소형의 array 생성
     Np = (len(f) - 1)//2 # array 를 2 로 나눈 후 int 값만 가져옴
-    phase = np.random.rand(Np) * 2 * np.pi
+    phase = np.random.rand(Np) * 2 * np.pi # 0 ~ 1 까지 랜덤난수 생성
     phase = np.cos(phase) + 1j * np.sin(phase)
     f[1 : Np + 1] *= phase
     f[-1 : -1 - Np : -1] = np.conj(f[1 : Np + 1]) #켤레 복소수 생성
-    return np.fft.ifft(f).real
+    return np.fft.ifft(f).real # 푸리에 변환 된 복소수의 실수값만 반환한다
 
 def band_limited_noise(min_freq, max_freq, samples = 1024, samplerate = 1):
     freqs = np.abs(np.fft.fftfreq(samples, 1 / samplerate)) # 푸리에 변환한 주파수의 값을 가짐
@@ -85,26 +85,27 @@ def removeNoise(
     #     noise_clip (array): The second parameter. / 노이즈 음성
     #     n_grad_freq (int): how many frequency channels to smooth over with the mask. / 필터를 거친 후의 주파수 채널이 얼마만큼 smooth 한가(?)
     #     n_grad_time (int): how many time channels to smooth over with the mask. / 필터를 거친 후의 시간 채널이 얼마만큼 smooth 한가(?)
-    #     n_fft (int): number audio of frames between STFT columns.
-    #     win_length (int): Each frame of audio is windowed by `window()`. The window will be of length `win_length` and then padded with zeros to match `n_fft`..
-    #     hop_length (int):number audio of frames between STFT columns.
+    #     n_fft (int): number audio of frames between STFT columns. / stft 컬럼을 몇 개로 자를 것인가
+    #     win_length (int): Each frame of audio is windowed by `window()`. The window will be of length `win_length` and then padded with zeros to match `n_fft`.. / window 사이즈
+    #     hop_length (int):number audio of frames between STFT columns. / stft 를 자를 때 얼마만큼 겹칠 것인가
     #     n_std_thresh (int): how many standard deviations louder than the mean dB of the noise (at each frequency level) to be considered signal
     #     prop_decrease (float): To what extent should you decrease noise (1 = all, 0 = none) / denoise 를 얼마만큼 실행시킬 것인가
     #     visual (bool): Whether to plot the steps of the algorithm / 시각화 관련
 
     if verbose:
-        noise_stft = stft(noise_clip, n_fft, hop_length, win_length)
-        noise_stft_db = amp_to_db(np.abs(noise_stft))
+        noise_stft = stft(noise_clip, n_fft, hop_length, win_length) # noise file 를 받아 stft 화 시킴
+        noise_stft_db = amp_to_db(np.abs(noise_stft)) # stft 를 dB 로 바꿔줌
         mean_freq_noise = np.mean(noise_stft_db, axis = 1) # stft 된 noise 의 평균
         std_freq_noise = np.std(noise_stft_db, axis = 1) #  stft 된 noise 의 표준편차
-        noise_thresh = mean_freq_noise + std_freq_noise * n_std_thresh
+        noise_thresh = mean_freq_noise + std_freq_noise * n_std_thresh # noise stft 의 표준푠차와 n_std_thresh 를 곱한 값에 평균을 더함
         print('noise_stft pass')
     
     if verbose:
-        sig_stft = stft(audio_clip, n_fft, hop_length, win_length)
-        sig_stft_db = amp_to_db(np.abs(sig_stft))
+        sig_stft = stft(audio_clip, n_fft, hop_length, win_length) # 원본 파일을 받아 stft 화 시킴
+        sig_stft_db = amp_to_db(np.abs(sig_stft)) # stft 를 dB 로 바꿔줌
         print('sig_stft pass')
-    mask_gain_dB = np.min(amp_to_db(np.abs(sig_stft)))
+
+    mask_gain_dB = np.min(amp_to_db(np.abs(sig_stft))) # 원본 파일 stft 의 데이터를 dB 한 값의 최소값을 반환
 
     smoothing_filter = np.outer(
         np.concatenate(
