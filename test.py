@@ -8,7 +8,7 @@ from tensorflow.keras.layers import Conv1D, MaxPooling1D,\
 from tensorflow.keras.models import Sequential
 
 y, sr = librosa.load(
-    'c:/nmb/nmb_data/주형.wav'
+    'c:/nmb/nmb_data/M2_low.wav'
 )
 
 print(y)

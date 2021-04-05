@@ -14,7 +14,7 @@ def noising(data, noise_factor):
 
 # load wav file
 y, sr = librosa.load(
-    'c:/nmb/nmb_data/주형.wav'
+    'c:/nmb/nmb_data/M2_low.wav'
 )
 
 print(y)
