@@ -1,4 +1,7 @@
-# https://keras.io/examples/audio/speaker_recognition_using_cnn/ 참고 (keras 공식 문서)
+# https://keras.io/examples/audio/speaker_recognition_using_cnn/
+# 참고해서 모델 만들기
+
+# Mel-spectogram 을 인풋으로 함!
 
 import numpy as np
 import librosa
@@ -11,13 +14,12 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCh
 def normalize(x, axis=0):
     return sklearn.preprocessing.minmax_scale(x, axis=axis)
 
-
 # 데이터 불러오기
-f_ds = np.load('C:/nmb/nmb_data/npy/F_data_mfcc.npy')
-f_lb = np.load('C:/nmb/nmb_data/npy/F_label_mfcc.npy')
-m_ds = np.load('C:/nmb/nmb_data/npy/M_data_mfcc.npy')
-m_lb = np.load('C:/nmb/nmb_data/npy/M_label_mfcc.npy')
-# (1073, 20, 216)
+f_ds = np.load('C:/nmb/nmb_data/npy/F_data_mel.npy')
+f_lb = np.load('C:/nmb/nmb_data/npy/F_label_mel.npy')
+m_ds = np.load('C:/nmb/nmb_data/npy/M_data_mel.npy')
+m_lb = np.load('C:/nmb/nmb_data/npy/M_label_mel.npy')
+# (1073, 128, 862)
 # (1073,)
 
 x = np.concatenate([f_ds, m_ds], 0)
@@ -73,13 +75,13 @@ model.summary()
 model.compile(optimizer="Adam", loss="sparse_categorical_crossentropy", metrics=["acc"])
 stop = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=5, verbose=1)
-mcpath = 'C:/nmb/nmb_data/h5/conv1_model_01_mfccs.h5'
+mcpath = 'C:/nmb/nmb_data/h5/conv1_model_01_mels.h5'
 mc = ModelCheckpoint(mcpath, monitor='val_loss', verbose=1, save_best_only=True)
 history = model.fit(x_train, y_train, epochs=128, batch_size=32, validation_split=0.2, callbacks=[stop, lr, mc])
 
 # --------------------------------------
 # 평가, 예측
-model.load_weights('C:/nmb/nmb_data/h5/conv1_model_01_mfccs.h5')
+model.load_weights('C:/nmb/nmb_data/h5/conv1_model_01_mels.h5')
 
 result = model.evaluate(x_test, y_test)
 print('loss: ', result[0]); print('acc: ', result[1])
@@ -89,23 +91,23 @@ files = librosa.util.find_files(pred_pathAudio, ext=['wav'])
 files = np.asarray(files)
 for file in files:   
     y, sr = librosa.load(file, sr=22050) 
-    mfccs = librosa.feature.mfcc(y, sr=sr)
-    pred_mfccs = normalize(mfccs, axis=1)
-    pred_mfccs = pred_mfccs.reshape(1, pred_mfccs.shape[0], pred_mfccs.shape[1])
-    y_pred = model.predict(pred_mfccs)
+    mels = librosa.feature.melspectrogram(y, sr=sr, n_fft=512, hop_length=128)
+    pred_mels = librosa.amplitude_to_db(mels, ref=np.max)
+    pred_mels = pred_mels.reshape(1, pred_mels.shape[0], pred_mels.shape[1])
+    y_pred = model.predict(pred_mels)
     # print(y_pred)
     y_pred_label = np.argmax(y_pred)
     if y_pred_label == 0 :
         print(file,(y_pred[0][0])*100,'%의 확률로 여자입니다.')
     else: print(file,(y_pred[0][1])*100,'%의 확률로 남자입니다.')
 
-# mfcc
-# loss:  0.39223840832710266
-# acc:  0.8232558369636536
-# C:\nmb\nmb_data\teamvoice_clear\F1.wav 99.35441017150879 %의 확률로 여자입니다.
-# C:\nmb\nmb_data\teamvoice_clear\F1_high.wav 97.21977114677429 %의 확률로 여자입니다.
-# C:\nmb\nmb_data\teamvoice_clear\F2.wav 76.60366892814636 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\teamvoice_clear\F3.wav 54.18684482574463 %의 확률로 여자입니다.
-# C:\nmb\nmb_data\teamvoice_clear\M1.wav 99.09709692001343 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\teamvoice_clear\M2.wav 58.05321931838989 %의 확률로 여자입니다.
-# C:\nmb\nmb_data\teamvoice_clear\M2_low.wav 99.3582546710968 %의 확률로 남자입니다.
+# melspectrogram
+# loss:  0.03772300109267235
+# acc:  0.9906976819038391
+# C:\nmb\nmb_data\teamvoice_clear\F1.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F1_high.wav 98.27861785888672 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F2.wav 99.99985694885254 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F3.wav 99.87558126449585 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M1.wav 99.99516010284424 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M2.wav 99.99920129776001 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M2_low.wav 100.0 %의 확률로 남자입니다.
