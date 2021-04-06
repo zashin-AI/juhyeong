@@ -23,7 +23,7 @@ for file in files:
     length = (len(y) / sr)
     if length < 5.0 : pass
     else:
-        mels = librosa.feature.mfcc(y, sr=sr)
+        mels = librosa.feature.zero_crossing_rate(y, frame_length=512, hop_length=128)
         mels = librosa.amplitude_to_db(mels, ref=np.max)
 
         dataset.append(mels)
@@ -37,12 +37,14 @@ label = np.array(label)
 print(dataset.shape)
 print(label.shape)
 
-np.save('C:/nmb/nmb_data/npy/M_data_mfcc.npy', arr=dataset)
-np.save('C:/nmb/nmb_data/npy/M_label_mfcc.npy', arr=label)
+np.save('C:/nmb/nmb_data/npy/M_data_zero.npy', arr=dataset)
+np.save('C:/nmb/nmb_data/npy/M_label_zero.npy', arr=label)
 print('=====save done=====')
 print('time : ', datetime.datetime.now() - str_time)
 
 # done
 
-# female mfcc = 
-# male mfcc = 
+# female tonnetz = (545, 6, 216)
+# male tonnetz = (528, 6, 216)
+# female zero_crossing_rate = (545, 1, 216)
+# male zero_crossing_rate = (528, 1, 216)
