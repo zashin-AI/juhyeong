@@ -14,10 +14,10 @@ def normalize(x, axis=0):
     return sklearn.preprocessing.minmax_scale(x, axis=axis)
 
 # 데이터 불러오기
-f_ds = np.load('C:/nmb/nmb_data/npy/F_data_tonnetz.npy')
-f_lb = np.load('C:/nmb/nmb_data/npy/F_label_tonnetz.npy')
-m_ds = np.load('C:/nmb/nmb_data/npy/M_data_tonnetz.npy')
-m_lb = np.load('C:/nmb/nmb_data/npy/M_label_tonnetz.npy')
+f_ds = np.load('C:/nmb/nmb_data/npy/F_data_zero.npy')
+f_lb = np.load('C:/nmb/nmb_data/npy/F_label_zero.npy')
+m_ds = np.load('C:/nmb/nmb_data/npy/M_data_zero.npy')
+m_lb = np.load('C:/nmb/nmb_data/npy/M_label_zero.npy')
 # (1073, 128, 862)
 # (1073,)
 
@@ -45,7 +45,7 @@ def residual_block(x, filters, conv_num=3, activation="relu"):
     x = Conv1D(filters, 3, padding="same")(x)
     x = Add()([x, s])
     x = Activation(activation)(x)
-    return MaxPool1D(pool_size=2, strides=1)(x)
+    return MaxPool1D(pool_size=2, strides=1, padding='same')(x)
 
 
 def build_model(input_shape, num_classes):
@@ -74,13 +74,13 @@ model.summary()
 model.compile(optimizer="Adam", loss="sparse_categorical_crossentropy", metrics=["acc"])
 stop = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=5, verbose=1)
-mcpath = 'C:/nmb/nmb_data/h5/conv1_model_01_tonnetz.h5'
+mcpath = 'C:/nmb/nmb_data/h5/conv1_model_01_zero_crossing_rate.h5'
 mc = ModelCheckpoint(mcpath, monitor='val_loss', verbose=1, save_best_only=True)
 history = model.fit(x_train, y_train, epochs=128, batch_size=32, validation_split=0.2, callbacks=[stop, lr, mc])
 
 # --------------------------------------
 # 평가, 예측
-model.load_weights('C:/nmb/nmb_data/h5/conv1_model_01_tonnetz.h5')
+model.load_weights('C:/nmb/nmb_data/h5/conv1_model_01_zero_crossing_rate.h5')
 
 result = model.evaluate(x_test, y_test)
 print('loss: ', result[0]); print('acc: ', result[1])
@@ -90,10 +90,10 @@ files = librosa.util.find_files(pred_pathAudio, ext=['wav'])
 files = np.asarray(files)
 for file in files:   
     y, sr = librosa.load(file, sr=22050) 
-    tonnetz = librosa.feature.tonnetz(y, sr = sr)
-    # pred_tonnetz = librosa.amplitude_to_db(tonnetz, ref=np.max)
-    pred_tonnetz = tonnetz.reshape(1, tonnetz.shape[0], tonnetz.shape[1])
-    y_pred = model.predict(pred_tonnetz)
+    zero_crossing_rate = librosa.feature.zero_crossing_rate(y, frame_length=512, hop_length=128)
+    # pred_zero_crossing_rate = librosa.amplitude_to_db(zero_crossing_rate, ref=np.max)
+    pred_zero_crossing_rate = zero_crossing_rate.reshape(1, zero_crossing_rate.shape[0], zero_crossing_rate.shape[1])
+    y_pred = model.predict(pred_zero_crossing_rate)
     # print(y_pred)
     y_pred_label = np.argmax(y_pred)
     if y_pred_label == 0 :
@@ -110,3 +110,14 @@ for file in files:
 # C:\nmb\nmb_data\teamvoice_clear\M1.wav 50.580328702926636 %의 확률로 여자입니다.
 # C:\nmb\nmb_data\teamvoice_clear\M2.wav 50.32282471656799 %의 확률로 여자입니다.
 # C:\nmb\nmb_data\teamvoice_clear\M2_low.wav 50.36168694496155 %의 확률로 여자입니다.
+
+# zero_crossing_rate
+# loss:  0.6629924774169922
+# acc:  0.5813953280448914
+# C:\nmb\nmb_data\teamvoice_clear\F1.wav 60.022276639938354 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F1_high.wav 60.583603382110596 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F2.wav 60.24249792098999 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F3.wav 60.26947498321533 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M1.wav 60.222381353378296 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M2.wav 60.134267807006836 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M2_low.wav 60.31702160835266 %의 확률로 남자입니다.

@@ -14,10 +14,10 @@ def normalize(x, axis=0):
     return sklearn.preprocessing.minmax_scale(x, axis=axis)
 
 # 데이터 불러오기
-f_ds = np.load('C:/nmb/nmb_data/npy/F_data_spectral_rolloff.npy')
-f_lb = np.load('C:/nmb/nmb_data/npy/F_label_spectral_rolloff.npy')
-m_ds = np.load('C:/nmb/nmb_data/npy/M_data_spectral_rolloff.npy')
-m_lb = np.load('C:/nmb/nmb_data/npy/M_label_spectral_rolloff.npy')
+f_ds = np.load('C:/nmb/nmb_data/npy/F_data_spectral_flatness.npy')
+f_lb = np.load('C:/nmb/nmb_data/npy/F_label_spectral_flatness.npy')
+m_ds = np.load('C:/nmb/nmb_data/npy/M_data_spectral_flatness.npy')
+m_lb = np.load('C:/nmb/nmb_data/npy/M_label_spectral_flatness.npy')
 # (1073, 128, 862)
 # (1073,)
 
@@ -74,13 +74,13 @@ model.summary()
 model.compile(optimizer="Adam", loss="sparse_categorical_crossentropy", metrics=["acc"])
 stop = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=5, verbose=1)
-mcpath = 'C:/nmb/nmb_data/h5/conv1_model_01_spectral_rolloff.h5'
+mcpath = 'C:/nmb/nmb_data/h5/conv1_model_01_spectral_flatness.h5'
 mc = ModelCheckpoint(mcpath, monitor='val_loss', verbose=1, save_best_only=True)
 history = model.fit(x_train, y_train, epochs=128, batch_size=32, validation_split=0.2, callbacks=[stop, lr, mc])
 
 # --------------------------------------
 # 평가, 예측
-model.load_weights('C:/nmb/nmb_data/h5/conv1_model_01_spectral_rolloff.h5')
+model.load_weights('C:/nmb/nmb_data/h5/conv1_model_01_spectral_flatness.h5')
 
 result = model.evaluate(x_test, y_test)
 print('loss: ', result[0]); print('acc: ', result[1])
@@ -90,10 +90,10 @@ files = librosa.util.find_files(pred_pathAudio, ext=['wav'])
 files = np.asarray(files)
 for file in files:   
     y, sr = librosa.load(file, sr=22050) 
-    spectral_rolloff = librosa.feature.spectral_rolloff(y, n_fft = 512, hop_length=128)
-    # pred_spectral_rolloff = librosa.amplitude_to_db(spectral_rolloff, ref=np.max)
-    pred_spectral_rolloff = spectral_rolloff.reshape(1, spectral_rolloff.shape[0], spectral_rolloff.shape[1])
-    y_pred = model.predict(pred_spectral_rolloff)
+    spectral_flatness = librosa.feature.spectral_flatness(y, n_fft = 512, hop_length=128)
+    # pred_spectral_flatness = librosa.amplitude_to_db(spectral_flatness, ref=np.max)
+    pred_spectral_flatness = spectral_flatness.reshape(1, spectral_flatness.shape[0], spectral_flatness.shape[1])
+    y_pred = model.predict(pred_spectral_flatness)
     # print(y_pred)
     y_pred_label = np.argmax(y_pred)
     if y_pred_label == 0 :
@@ -143,3 +143,14 @@ for file in files:
 # C:\nmb\nmb_data\teamvoice_clear\M1.wav 51.70819163322449 %의 확률로 여자입니다.
 # C:\nmb\nmb_data\teamvoice_clear\M2.wav 51.66774392127991 %의 확률로 여자입니다.
 # C:\nmb\nmb_data\teamvoice_clear\M2_low.wav 51.5142023563385 %의 확률로 여자입니다.
+
+# spectral flatness
+# loss:  0.7055891752243042
+# acc:  0.4651162922382355
+# C:\nmb\nmb_data\teamvoice_clear\F1.wav 52.13229060173035 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F1_high.wav 52.19880938529968 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F2.wav 52.12936997413635 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F3.wav 52.188658714294434 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M1.wav 52.15936899185181 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M2.wav 52.19978094100952 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M2_low.wav 52.40528583526611 %의 확률로 남자입니다.

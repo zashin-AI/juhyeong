@@ -6,7 +6,7 @@ import sklearn
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential, load_model, Model
-from tensorflow.keras.layers import Dense, Conv1D, MaxPool1D, AveragePooling1D, Dropout, Activation, Flatten, Add, Input, Conv2D
+from tensorflow.keras.layers import Dense, Conv1D, MaxPool1D, AveragePooling1D, Dropout, Activation, Flatten, Add, Input
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 def normalize(x, axis=0):
     return sklearn.preprocessing.minmax_scale(x, axis=axis)
@@ -35,37 +35,37 @@ print(y_test.shape)
 # 모델 구성
 model = Sequential()
 
-def residual_block(x, filters, conv_num=3, activation="relu"):
     # Shortcut
-    s = Conv1D(filters, 1, padding="same")(x)
-    for i in range(conv_num - 1):
-        x = Conv1D(filters, 3, padding="same")(x)
-        x = Activation(activation)(x)
-    x = Conv1D(filters, 3, padding="same")(x)
-    x = Add()([x, s])
-    x = Activation(activation)(x)
-    return MaxPool1D(pool_size=2, strides=1)(x)
+inputs = Input(x_train.shape[1:], 2)
+s = Conv1D(16, 1, padding="same")(x)
+for i in range(2):
+    x = Conv1D(16, 3, padding="same")(x)
+    x = Activation('relu')(x)
+x = Conv1D(16, 3, padding="same")(x)
+x = Add()([x, s])
+outputs = Activation('relu')(x)
+model = Model(inputs, outputs)
 
 
-def build_model(input_shape, num_classes):
-    inputs = Input(shape=input_shape, name="input")
+# def build_model(input_shape, num_classes):
+#     inputs = Input(shape=input_shape, name="input")
 
-    x = residual_block(inputs, 16, 2)
-    x = residual_block(x, 32, 2)
-    x = residual_block(x, 64, 3)
-    x = residual_block(x, 128, 3)
-    x = residual_block(x, 128, 3)
+#     x = residual_block(inputs, 16, 2)
+#     x = residual_block(x, 32, 2)
+#     x = residual_block(x, 64, 3)
+#     x = residual_block(x, 128, 3)
+#     x = residual_block(x, 128, 3)
 
-    x = AveragePooling1D(pool_size=3, strides=3)(x)
-    x = Flatten()(x)
-    x = Dense(256, activation="relu")(x)
-    x = Dense(128, activation="relu")(x)
+#     x = AveragePooling1D(pool_size=3, strides=3)(x)
+#     x = Flatten()(x)
+#     x = Dense(256, activation="relu")(x)
+#     x = Dense(128, activation="relu")(x)
 
-    outputs = Dense(num_classes, activation="softmax", name="output")(x)
+#     outputs = Dense(num_classes, activation="softmax", name="output")(x)
 
-    return Model(inputs=inputs, outputs=outputs)
+#     return Model(inputs=inputs, outputs=outputs)
 
-model = build_model(x_train.shape[1:], 2)
+# model = build_model(x_train.shape[1:], 2)
 
 model.summary()
 '''
