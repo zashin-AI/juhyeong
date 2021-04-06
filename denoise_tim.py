@@ -107,8 +107,8 @@ def removeNoise(
 
     mask_gain_dB = np.min(amp_to_db(np.abs(sig_stft))) # 원본 파일 stft 의 데이터를 dB 한 값의 최소값을 반환
 
-    smoothing_filter = np.outer(
-        np.concatenate(
+    smoothing_filter = np.outer( # 두 행렬의 곱. 여기선 각각 np.concatenate 들이다.
+        np.concatenate( # 1차원 배열들을 concat 함
             [
                 np.linspace(0, 1, n_grad_freq + 1, endpoint = False),
                 # linspace 함수를 이용하여 0 부터 1 까지 n_grad_freq + 1 (==3) 개의 1차원 배열을 생성
