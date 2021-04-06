@@ -14,10 +14,10 @@ def normalize(x, axis=0):
     return sklearn.preprocessing.minmax_scale(x, axis=axis)
 
 # 데이터 불러오기
-f_ds = np.load('C:/nmb/nmb_data/npy/F_data_chroma_cqt.npy')
-f_lb = np.load('C:/nmb/nmb_data/npy/F_label_chroma_cqt.npy')
-m_ds = np.load('C:/nmb/nmb_data/npy/M_data_chroma_cqt.npy')
-m_lb = np.load('C:/nmb/nmb_data/npy/M_label_chroma_cqt.npy')
+f_ds = np.load('C:/nmb/nmb_data/npy/F_data_spectral_rolloff.npy')
+f_lb = np.load('C:/nmb/nmb_data/npy/F_label_spectral_rolloff.npy')
+m_ds = np.load('C:/nmb/nmb_data/npy/M_data_spectral_rolloff.npy')
+m_lb = np.load('C:/nmb/nmb_data/npy/M_label_spectral_rolloff.npy')
 # (1073, 128, 862)
 # (1073,)
 
@@ -45,7 +45,7 @@ def residual_block(x, filters, conv_num=3, activation="relu"):
     x = Conv1D(filters, 3, padding="same")(x)
     x = Add()([x, s])
     x = Activation(activation)(x)
-    return MaxPool1D(pool_size=2, strides=1)(x)
+    return MaxPool1D(pool_size=2, strides=1, padding='same')(x)
 
 
 def build_model(input_shape, num_classes):
@@ -57,7 +57,7 @@ def build_model(input_shape, num_classes):
     x = residual_block(x, 128, 3)
     x = residual_block(x, 128, 3)
 
-    x = AveragePooling1D(pool_size=3, strides=3)(x)
+    x = AveragePooling1D(pool_size=3, strides=3, padding='same')(x)
     x = Flatten()(x)
     x = Dense(256, activation="relu")(x)
     x = Dense(128, activation="relu")(x)
@@ -74,13 +74,13 @@ model.summary()
 model.compile(optimizer="Adam", loss="sparse_categorical_crossentropy", metrics=["acc"])
 stop = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=5, verbose=1)
-mcpath = 'C:/nmb/nmb_data/h5/conv1_model_01_cqt.h5'
+mcpath = 'C:/nmb/nmb_data/h5/conv1_model_01_spectral_rolloff.h5'
 mc = ModelCheckpoint(mcpath, monitor='val_loss', verbose=1, save_best_only=True)
 history = model.fit(x_train, y_train, epochs=128, batch_size=32, validation_split=0.2, callbacks=[stop, lr, mc])
 
 # --------------------------------------
 # 평가, 예측
-model.load_weights('C:/nmb/nmb_data/h5/conv1_model_01_cqt.h5')
+model.load_weights('C:/nmb/nmb_data/h5/conv1_model_01_spectral_rolloff.h5')
 
 result = model.evaluate(x_test, y_test)
 print('loss: ', result[0]); print('acc: ', result[1])
@@ -90,12 +90,56 @@ files = librosa.util.find_files(pred_pathAudio, ext=['wav'])
 files = np.asarray(files)
 for file in files:   
     y, sr = librosa.load(file, sr=22050) 
-    cqt = librosa.feature.chroma_cqt(y, sr = sr, hop_length=128)
-    # pred_cqt = librosa.amplitude_to_db(cqt, ref=np.max)
-    pred_cqt = cqt.reshape(1, cqt.shape[0], cqt.shape[1])
-    y_pred = model.predict(pred_cqt)
+    spectral_rolloff = librosa.feature.spectral_rolloff(y, n_fft = 512, hop_length=128)
+    # pred_spectral_rolloff = librosa.amplitude_to_db(spectral_rolloff, ref=np.max)
+    pred_spectral_rolloff = spectral_rolloff.reshape(1, spectral_rolloff.shape[0], spectral_rolloff.shape[1])
+    y_pred = model.predict(pred_spectral_rolloff)
     # print(y_pred)
     y_pred_label = np.argmax(y_pred)
     if y_pred_label == 0 :
         print(file,(y_pred[0][0])*100,'%의 확률로 여자입니다.')
     else: print(file,(y_pred[0][1])*100,'%의 확률로 남자입니다.')
+
+# spectral bandwidth
+# loss:  0.6867212057113647
+# acc:  0.5116279125213623
+# C:\nmb\nmb_data\teamvoice_clear\F1.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F1_high.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F2.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F3.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M1.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M2.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M2_low.wav 100.0 %의 확률로 여자입니다.
+
+# spectral centroid
+# loss:  0.6931828260421753
+# acc:  0.47441861033439636
+# C:\nmb\nmb_data\teamvoice_clear\F1.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F1_high.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F2.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F3.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M1.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M2.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M2_low.wav 100.0 %의 확률로 여자입니다.
+
+# spectral contrast
+# loss:  0.00019431315013207495
+# acc:  1.0
+# C:\nmb\nmb_data\teamvoice_clear\F1.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F1_high.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F2.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F3.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M1.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M2.wav 100.0 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M2_low.wav 100.0 %의 확률로 여자입니다.
+
+# spectral rolloff
+# loss:  0.6925438642501831
+# acc:  0.4976744055747986
+# C:\nmb\nmb_data\teamvoice_clear\F1.wav 51.729339361190796 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F1_high.wav 51.63537859916687 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F2.wav 51.7463743686676 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\F3.wav 51.72698497772217 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M1.wav 51.70819163322449 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M2.wav 51.66774392127991 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\teamvoice_clear\M2_low.wav 51.5142023563385 %의 확률로 여자입니다.
