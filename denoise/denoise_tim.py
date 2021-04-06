@@ -31,7 +31,7 @@ def fftnoise(f): # 노이즈 생성을 fft 시킴
     phase = np.random.rand(Np) * 2 * np.pi # 0 ~ 1 까지 랜덤난수 생성
     phase = np.cos(phase) + 1j * np.sin(phase)
     f[1 : Np + 1] *= phase
-    f[-1 : -1 - Np : -1] = np.conj(f[1 : Np + 1]) #켤레 복소수 생성
+    f[-1 : -1 - Np : -1] = np.conj(f[1 : Np + 1]) # 켤레 복소수 생성
     return np.fft.ifft(f).real # 푸리에 변환 된 복소수의 실수값만 반환한다
 
 def band_limited_noise(min_freq, max_freq, samples = 1024, samplerate = 1):
