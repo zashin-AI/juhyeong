@@ -25,7 +25,7 @@ data, rate = librosa.load(
 print('data : ', len(data)) # 110250
 print('rate : ', rate) # 22050
 
-def fftnoise(f): # 노이즈 생성을 fft 시킴
+def fftnoise(f): # 노이즈 생성을 fft 시킴 / 푸레이 변환 공식을 따름
     f = np.array(f, dtype = 'complex') # 복수소형의 array 생성
     Np = (len(f) - 1)//2 # array 를 2 로 나눈 후 int 값만 가져옴
     phase = np.random.rand(Np) * 2 * np.pi # 0 ~ 1 까지 랜덤난수 생성
