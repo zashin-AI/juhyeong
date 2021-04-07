@@ -2,7 +2,14 @@ import librosa
 import numpy as np
 import sklearn
 
-def load_data(filepath, filename):
+def load_data(filepath, filename, labels):
+
+    '''
+    Args :
+        filepath : 파일 불러올 경로
+        filename : 불러올 파일 확장자명 e.g. wav, flac...
+        label : label 번호 (여자 : 0, 남자 : 1)
+    '''
     count = 1
     dataset = list()
     label = list()
@@ -17,13 +24,14 @@ def load_data(filepath, filename):
         length = (len(y) / sr)
         if length < 5.0 : pass
         else:
-            mels = librosa.feature.mfcc(y, sr=sr, n_mfcc=20)
+            mels = librosa.feature.mfcc(y, sr=sr)
             mels = librosa.amplitude_to_db(mels, ref=np.max)
             mels = normalize(mels, axis = 1)
 
             dataset.append(mels)
-            label.append(1)
+            label.append(labels)
             print(str(count))
             
             count+=1
+
     return dataset, label
