@@ -29,7 +29,7 @@ print('rate : ', rate) # 22050
 
 def fftnoise(f): # 노이즈 생성을 fft 시킴 / 푸리에 변환 공식을 따름
     f = np.array(f, dtype = 'complex') # 복소수형의 array 생성
-    Np = (len(f) - 1)//2 # array 를 2 로 나눈 후 int 값만 가져옴 / data 값의 길이 - 1
+    Np = (len(f) - 1)//2 # array 를 2 로 나눈 후 int 값만 가져옴 / 기본적인 신호가 1 cycle 을 반복하는 시간은 1/2 pi 이다
     phase = np.random.rand(Np) * 2 * np.pi
     # 0 ~ 1 까지 랜덤난수 생성
     # 반지름이 1인 원의 한 바퀴를 돌기 때문에 2 * pi 를 한다
