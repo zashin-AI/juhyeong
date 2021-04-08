@@ -111,3 +111,22 @@ for file in files:
 # C:\nmb\nmb_data\teamvoice_clear\M1.wav 99.99516010284424 %의 확률로 남자입니다.
 # C:\nmb\nmb_data\teamvoice_clear\M2.wav 99.99920129776001 %의 확률로 남자입니다.
 # C:\nmb\nmb_data\teamvoice_clear\M2_low.wav 100.0 %의 확률로 남자입니다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

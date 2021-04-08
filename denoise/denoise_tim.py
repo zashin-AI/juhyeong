@@ -91,12 +91,12 @@ def removeNoise(
     # Args:
     #     audio_clip (array): The first parameter. / 기존 음성
     #     noise_clip (array): The second parameter. / 노이즈 음성
-    #     n_grad_freq (int): how many frequency channels to smooth over with the mask. / 필터를 거친 후의 주파수 채널이 얼마만큼 smooth 한가(?)
-    #     n_grad_time (int): how many time channels to smooth over with the mask. / 필터를 거친 후의 시간 채널이 얼마만큼 smooth 한가(?)
+    #     n_grad_freq (int): how many frequency channels to smooth over with the mask. / mask 로 처리 할 주파수 채널의 수
+    #     n_grad_time (int): how many time channels to smooth over with the mask. / mask 로 부드럽게 처리 할 시간 채널의 수
     #     n_fft (int): number audio of frames between STFT columns. / stft 컬럼을 몇 개로 자를 것인가
     #     win_length (int): Each frame of audio is windowed by `window()`. The window will be of length `win_length` and then padded with zeros to match `n_fft`.. / window 사이즈
     #     hop_length (int):number audio of frames between STFT columns. / stft 를 자를 때 얼마만큼 겹칠 것인가
-    #     n_std_thresh (int): how many standard deviations louder than the mean dB of the noise (at each frequency level) to be considered signal
+    #     n_std_thresh (int): how many standard deviations louder than the mean dB of the noise (at each frequency level) to be considered signal / 신호로 간주 할 잡음 수
     #     prop_decrease (float): To what extent should you decrease noise (1 = all, 0 = none) / denoise 를 얼마만큼 실행시킬 것인가
     #     visual (bool): Whether to plot the steps of the algorithm / 시각화 관련
 
