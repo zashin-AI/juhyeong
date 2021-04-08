@@ -26,7 +26,8 @@ print('data : ', len(data)) # 110250
 print('rate : ', rate) # 22050
 
 # define noise functions
-def fftnoise(f): # 노이즈 생성을 fft 시킴 / 푸레이 변환 공식을 따름
+'''
+def fftnoise(f): # 노이즈 생성을 fft 시킴 / 푸리에 변환 공식을 따름
     f = np.array(f, dtype = 'complex') # 복수소형의 array 생성
     Np = (len(f) - 1)//2 # array 를 2 로 나눈 후 int 값만 가져옴
     phase = np.random.rand(Np) * 2 * np.pi # 0 ~ 1 까지 랜덤난수 생성
@@ -49,6 +50,18 @@ noise = band_limited_noise( # 주파수 영역대를 4000~12000 로 정규화 �
     samplerate = rate) * 10
 noise_clip = noise[:rate * noise_len] # data 값의 길이를 구하기 위함
 audio_clip_band_limited = data + noise # original data 와 정규화 시킨 noise 를 결합 시킴
+'''
+
+def fftnoise(audio_file, noise_factor):
+    noise = np.random.normal(len(audio_file))
+    data = audio_file + noise_factor * noise
+    data = data.astype(type(data[0]))
+    fft_noise = librosa.feature.fft_frequencies(sr = 22050, n_fft = 2048)
+    return fft_noise
+
+def band_limited(min_freq, max_freq, sample = 1024, samplerate = 1):
+    freqs = np.abs(fft_noise())
+
 
 # define functions
 def stft(y, n_fft, hop_length, win_length):
