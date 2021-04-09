@@ -17,6 +17,8 @@ data, rate = librosa.load(
     'c:/nmb/nmb_data/M2.wav'
 ) # 여성 화자
 
+# data = data * 10
+
 # y2, sr2 = librosa.load(
 #     'c:/nmb/nmb_data/M2_low.wav'
 # ) # 남성 화자
@@ -28,10 +30,22 @@ def noising(data):
     noise_create = np.random.randn(len(data))
     return noise_create
 
+# def fftnoise(data):
+#     temp = np.fft.fft(data)
+#     return np.fft.ifft(temp).real
+
 def normalize(data, axis = 0, num = 1):
-    return sklearn.preprocessing.minmax_scale(data, axis = axis) / num
+    return sklearn.preprocessing.minmax_scale(data, axis = axis) * num
+
+# def band_limited_noise(min_freq, max_freq, samples=1024, samplerate=1):
+#     freqs = np.abs(np.fft.fftfreq(samples, 1 / samplerate))
+#     f = np.zeros(samples)
+#     f[np.logical_and(freqs >= min_freq, freqs <= max_freq)] = 1
+#     return noising(data)
 
 noise = noising(data)
+# noise = fftnoise(noise)
+# noise = band_limited_noise(4000, 12000, samples = len(data), samplerate = rate) * 10
 noise = normalize(noise, axis = 0, num = 10)
 
 noise_clip = noise[:rate * data_length]
@@ -156,12 +170,16 @@ print(output)
 sf.write(
     'c:/nmb/nmb_data/output.wav', output, rate
 )
+sf.write(
+    'c:/nmb/nmb_data/noise_fac.wav', audio_clip_band_limited, rate
+)
 
 # visualization
 fig = plt.figure(figsize = (16, 6))
 ax1 = fig.add_subplot(2, 2, 1)
 ax2 = fig.add_subplot(2, 2, 2)
 ax3 = fig.add_subplot(2, 2, 3)
+ax4 = fig.add_subplot(2, 2, 4)
 
 librosa.display.waveplot(
     data, ax = ax1
@@ -177,6 +195,11 @@ librosa.display.waveplot(
     output, ax = ax3
 )
 ax3.set(title = 'denoise')
+
+librosa.display.waveplot(
+    noise, ax = ax4
+)
+ax4.set(title = 'noise_factor')
 
 fig.tight_layout()
 plt.show()

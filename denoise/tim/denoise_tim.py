@@ -17,10 +17,11 @@ import librosa.display
 import soundfile as sf
 
 # load file
-filepath = 'c:/nmb/nmb_data/M2_low.wav'
+filepath = 'c:/nmb/nmb_data/M2.wav'
 data, rate = librosa.load(
     filepath
 )
+data = data / 32768
 
 print('data : ', len(data)) # 110250
 print('rate : ', rate) # 22050
@@ -59,12 +60,12 @@ audio_clip_band_limited = data + noise # original data 와 정규화 시킨 nois
 
 print(len(noise_clip))
 
-plt.figure(figsize=(16, 6))
+# plt.figure(figsize=(16, 6))
 
-librosa.display.waveplot(noise_clip)
-plt.show()
+# librosa.display.waveplot(noise_clip)
+# plt.show()
 
-'''
+
 # define functions
 def stft(y, n_fft, hop_length, win_length):
     return librosa.stft(
@@ -87,9 +88,9 @@ def removeNoise(
     noise_clip,
     n_grad_freq = 2,
     n_grad_time = 4,
-    n_fft = 512,
-    win_length = 512,
-    hop_length = 128,
+    n_fft = 2048,
+    win_length = 2048,
+    hop_length = 512,
     n_std_thresh = 1.5,
     prop_decrease = 1.0,
     verbose = False,
@@ -205,4 +206,3 @@ ax3.set(title = 'denoise')
 
 fig.tight_layout()
 plt.show()
-'''

@@ -7,17 +7,15 @@ import librosa
 import librosa.display
 import soundfile as sf
 
-wav_loc = "c:/nmb/nmb_data/M2.wav"
-rate, data = wavfile.read(wav_loc)
-data = data / 255
+# wav_loc = "c:/nmb/nmb_data/M2.wav"
+# rate, data = wavfile.read(wav_loc)
+# data = data / 32768
 
-print('data : ', data)
-# 1 : data :  [-15. -15. -16. ... 242. 235. 234.]
-# 2 : data :  [ -7.5  -7.5  -8.  ... 121.  117.5 117. ]
-# 255 : data :  [-0.05882353 -0.05882353 -0.0627451  ...  0.94901961  0.92156863  0.91764706]
-
+filepath = 'c:/nmb/nmb_data/M2.wav'
+data, rate = librosa.load(filepath)
 
 # from https://stackoverflow.com/questions/33933842/how-to-generate-noise-in-frequency-range-with-numpy
+
 def fftnoise(f):
     f = np.array(f, dtype="complex")
     Np = (len(f) - 1) // 2
@@ -38,9 +36,6 @@ noise_len = 5 # seconds
 noise = band_limited_noise(min_freq=4000, max_freq = 12000, samples=len(data), samplerate=rate)*10
 noise_clip = noise[:rate*noise_len]
 audio_clip_band_limited = data+noise
-# fig, ax = plt.subplots(figsize=(20,4))
-# ax.plot(audio_clip_band_limited)
-# IPython.display.Audio(data=audio_clip_band_limited, rate=rate)
 
 import time
 from datetime import timedelta as td
@@ -98,9 +93,9 @@ def removeNoise(
     noise_clip,
     n_grad_freq=2,
     n_grad_time=4,
-    n_fft=2048,
-    win_length=2048,
-    hop_length=512,
+    n_fft=512,
+    win_length=512,
+    hop_length=128,
     n_std_thresh=1.5,
     prop_decrease=1.0,
     verbose=False,
@@ -220,15 +215,21 @@ output = removeNoise(audio_clip=audio_clip_band_limited, noise_clip=noise_clip,v
 sf.write(
     'c:/nmb/nmb_data/output2.wav', output, samplerate=rate
 )
+sf.write(
+    'c:/nmb/nmb_data/original.wav', data, samplerate=rate
+)
 
 fig = plt.figure(figsize = (16, 6))
-ax1 = fig.add_subplot(2, 1, 1)
-ax2 = fig.add_subplot(2, 1, 2)
+ax1 = fig.add_subplot(2, 2, 1)
+ax2 = fig.add_subplot(2, 2, 2)
+ax3 = fig.add_subplot(2, 2, 3)
 
 librosa.display.waveplot(data, ax = ax1)
 librosa.display.waveplot(output, ax = ax2)
+librosa.display.waveplot(audio_clip_band_limited, ax = ax3)
 ax1.set(title = 'original')
 ax2.set(title = 'denoise')
+ax3.set(title = 'data with noise')
 
 fig.tight_layout()
 plt.show()
