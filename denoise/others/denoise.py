@@ -9,7 +9,7 @@ import tensorflow
 
 from keras.models import Model
 from keras.layers import Conv2D, MaxPooling2D, Flatten, \
-    Dense, Activation, ReLU, LeakyReLU
+    Dense, Activation, ReLU, LeakyReLU, Input
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 '''
 def make_noise(data, noise_factor):
@@ -80,4 +80,30 @@ np.save(
     'c:/nmb/nmb_data/npy/raw_label_male.npy', arr = label
 )
 '''
+male = np.load(
+    'c:/nmb/nmb_data/npy/raw_data_male.npy'
+)
+female = np.load(
+    'c:/nmb/nmb_data/npy/raw_data_female.npy'
+)
+male_noise = np.load(
+    'c:/nmb/nmb_data/npy/noise_data_male.npy'
+)
+female_noise = np.load(
+    'c:/nmb/nmb_data/npy/noise_data_female.npy'
+)
+label_male = np.load(
+    'c:/nmb/nmb_data/npy/raw_label_male.npy'
+)
+label_female = np.load(
+    'c:/nmb/nmb_data/npy/raw_label_female.npy'
+)
 
+target_dataset = np.concatenate((female, male), axis = 0)
+train_dataset = np.concatenate((female_noise, male_noise), axis = 0)
+label_set = np.concatenate((label_female, label_male), axis = 0)
+y, sr = librosa.load(
+    'c:/nmb/nmb_data/M2.wav'
+)
+
+sr = 22050
