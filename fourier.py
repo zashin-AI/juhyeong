@@ -8,7 +8,9 @@ y, sr = librosa.load(
 )
 
 ft = np.fft.fft(y, axis = -1)
-ft = abs(ft)      # [0.48021123 1.86881154 1.24656886 ... 2.02027637 1.24656886 1.86881154]
+ft = abs(ft)
+
+
 fr = np.fft.fftfreq(len(y), d = 1.0)
 
 print(ft)
