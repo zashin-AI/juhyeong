@@ -107,6 +107,7 @@ def removeNoise(
         )[1:-1],
     )
     smoothing_filter = smoothing_filter / np.sum(smoothing_filter)
+
     db_thresh = np.repeat(
         np.reshape(noise_thresh, [1, len(mean_freq_noise)]),
         np.shape(sig_stft_db)[1],

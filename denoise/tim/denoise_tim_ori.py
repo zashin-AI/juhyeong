@@ -35,8 +35,8 @@ def band_limited_noise(min_freq, max_freq, samples=1024, samplerate=1):
     f[np.logical_and(freqs >= min_freq, freqs <= max_freq)] = 1
     return fftnoise(f)
 
-noise_len = len(data)//rate # seconds
-noise = band_limited_noise(min_freq=4000, max_freq = 12000, samples=len(data), samplerate=rate)
+noise_len = 5 # seconds
+noise = band_limited_noise(min_freq=4000, max_freq = 12000, samples=len(data), samplerate=rate) *10
 noise_clip = noise[:rate*noise_len]
 audio_clip_band_limited = data+noise
 

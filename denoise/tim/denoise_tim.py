@@ -17,7 +17,7 @@ import librosa.display
 import soundfile as sf
 
 # load file
-filepath = 'c:/nmb/nmb_data/M2.wav'
+filepath = 'c:/nmb/nmb_data/M5.wav'
 data, rate = librosa.load(
     filepath
 )
@@ -88,9 +88,9 @@ def removeNoise(
     noise_clip,
     n_grad_freq = 2,
     n_grad_time = 4,
-    n_fft = 2048,
-    win_length = 2048,
-    hop_length = 512,
+    n_fft = 512,
+    win_length = 512,
+    hop_length = 128,
     n_std_thresh = 1.5,
     prop_decrease = 1.0,
     verbose = False,
