@@ -2,6 +2,7 @@ import noisereduce as nr
 import librosa
 import soundfile as sf
 
+'''
 data, rate = librosa.load(
     'c:/nmb/nmb_data/M5.wav'
 )
@@ -22,10 +23,13 @@ reduce_noise = nr.reduce_noise(
 sf.write(
     'c:/nmb/nmb_data/reduce_noise_M5.wav', reduce_noise, rate
 )
+'''
+import sys
+sys.path.append(
+    'c:/nmb/nada/'
+)
 
-
-
-
-
-
-
+import function.datasave as ds
+data, label = ds.load_data_mfcc(
+    'c:/nmb/nmb_data/', 'wav', 1
+)

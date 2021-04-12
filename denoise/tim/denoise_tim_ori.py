@@ -72,31 +72,31 @@ def removeNoise(
     # STFT over noise
     noise_stft = _stft(noise_clip, n_fft, hop_length, win_length)
     print('noise_stft : ', noise_stft)
-    print('noise_stft : ', noise_stft.shape)
+    print('noise_stft : ', noise_stft.shape) # noise_stft :  (257, 690)
     noise_stft_db = _amp_to_db(np.abs(noise_stft))  # convert to dB
     print('noise_stft_db : ', noise_stft_db)
-    print('noise_stft_db : ', noise_stft_db.shape)
+    print('noise_stft_db : ', noise_stft_db.shape) # noise_stft_db :  (257, 690)
     # Calculate statistics over noise
     mean_freq_noise = np.mean(noise_stft_db, axis=1)
     print('mean_freq_noise : ', mean_freq_noise)
-    print('mean_freq_noise : ', mean_freq_noise.shape)
+    print('mean_freq_noise : ', mean_freq_noise.shape) # mean_freq_noise :  (257,)
     std_freq_noise = np.std(noise_stft_db, axis=1)
     print('std_freq_noise : ', std_freq_noise)
-    print('std_freq_noise : ', std_freq_noise.shape)
+    print('std_freq_noise : ', std_freq_noise.shape) # std_freq_noise :  (257,)
     noise_thresh = mean_freq_noise + std_freq_noise * n_std_thresh
     print('noise_thresh : ', noise_thresh)
-    print('noise_thresh : ', noise_thresh.shape)
+    print('noise_thresh : ', noise_thresh.shape) # noise_thresh :  (257,)
     # STFT over signal
     sig_stft = _stft(audio_clip, n_fft, hop_length, win_length)
     print('sig_stft : ', sig_stft)
-    print('sig_stft : ', sig_stft.shape)
+    print('sig_stft : ', sig_stft.shape) # sig_stft :  (257, 862)
     sig_stft_db = _amp_to_db(np.abs(sig_stft))
     print('sig_stft_db : ', sig_stft_db)
-    print('sig_stft_db : ', sig_stft_db.shape)
+    print('sig_stft_db : ', sig_stft_db.shape) # sig_stft_db :  (257, 862)
     # Calculate value to mask dB to
     mask_gain_dB = np.min(_amp_to_db(np.abs(sig_stft)))
-    print('mask_gina_db : ', mask_gain_dB)
-    print('mask_gina_db : ', mask_gain_dB.shape)
+    print('mask_gain_db : ', mask_gain_dB) # mask_gina_db :  -31.554999244459893
+    print('mask_gain_db : ', mask_gain_dB.shape) # ()
     # Create a smoothing filter for the mask in time and frequency
     smoothing_filter = np.outer(
         np.concatenate(
@@ -114,7 +114,7 @@ def removeNoise(
     )
     smoothing_filter = smoothing_filter / np.sum(smoothing_filter)
     print('smoothing_filter : ', smoothing_filter)
-    print('smoothing_filter : ', smoothing_filter.shape)
+    print('smoothing_filter : ', smoothing_filter.shape) # smoothing_filter :  (5, 9)
     # calculate the threshold for each frequency/time bin
     db_thresh = np.repeat(
         np.reshape(noise_thresh, [1, len(mean_freq_noise)]),
@@ -122,47 +122,47 @@ def removeNoise(
         axis=0,
     ).T
     print('db_thresh : ', db_thresh)
-    print('db_thresh : ', db_thresh.shape)
+    print('db_thresh : ', db_thresh.shape) # db_thresh :  (257, 862)
     # mask if the signal is above the threshold
     sig_mask = sig_stft_db < db_thresh
     print('sig_mask : ', sig_mask)
-    print('sig_mask : ', sig_mask.shape)
+    print('sig_mask : ', sig_mask.shape) # sig_mask :  (257, 862)
     # convolve the mask with a smoothing filter
     sig_mask = scipy.signal.fftconvolve(sig_mask, smoothing_filter, mode="same")
     print('sig_mask : ', sig_mask)
-    print('sig_mask : ', sig_mask.shape)
+    print('sig_mask : ', sig_mask.shape) # sig_mask :  (257, 862)
     sig_mask = sig_mask * prop_decrease
     print('sig_mask : ', sig_mask)
-    print('sig_mask : ', sig_mask.shape)
+    print('sig_mask : ', sig_mask.shape) # sig_mask :  (257, 862)
     # mask the signal
     sig_stft_db_masked = (
         sig_stft_db * (1 - sig_mask)
         + np.ones(np.shape(mask_gain_dB)) * mask_gain_dB * sig_mask
     )  # mask real
     print('sig_stft_db_masked : ', sig_stft_db_masked)
-    print('sig_stft_db_masked : ', sig_stft_db_masked.shape)
+    print('sig_stft_db_masked : ', sig_stft_db_masked.shape) # sig_stft_db_masked :  (257, 862)
     sig_imag_masked = np.imag(sig_stft) * (1 - sig_mask)
     print('sig_imag_masked : ', sig_imag_masked)
-    print('sig_imag_masked : ', sig_imag_masked.shape)
+    print('sig_imag_masked : ', sig_imag_masked.shape) # sig_imag_masked :  (257, 862)
     sig_stft_amp = (_db_to_amp(sig_stft_db_masked) * np.sign(sig_stft)) + (
         1j * sig_imag_masked
     )
     print('sig_stft_amp : ', sig_stft_amp)
-    print('sig_stft_amp : ', sig_stft_amp.shape)
+    print('sig_stft_amp : ', sig_stft_amp.shape) # sig_stft_amp :  (257, 862)
     # recover the signal
     recovered_signal = _istft(sig_stft_amp, hop_length, win_length)
     print('recovered_signal : ', recovered_signal)
-    print('recovered_signal : ', recovered_signal.shape)
+    print('recovered_signal : ', recovered_signal.shape) # recovered_signal :  (110208,)
     recovered_spec = _amp_to_db(
         np.abs(_stft(recovered_signal, n_fft, hop_length, win_length))
     )
     print('recovered_spec : ', recovered_spec)
-    print('recovered_spec : ', recovered_spec.shape)
+    print('recovered_spec : ', recovered_spec.shape) # recovered_spec :  (257, 862)
     return recovered_signal
 
 output = removeNoise(audio_clip=audio_clip_band_limited, noise_clip=noise_clip)
 print('output : ', output)
-print('output : ', output.shape)
+print('output : ', output.shape) # output :  (110208,)
 
 sf.write(
     'c:/nmb/nmb_data/output2.wav', output, samplerate=rate
