@@ -16,18 +16,19 @@ data, rate = librosa.load(filepath)
 
 # from https://stackoverflow.com/questions/33933842/how-to-generate-noise-in-frequency-range-with-numpy
 
-# def fftnoise(f):
-#     f = np.array(f, dtype="complex")
-#     Np = (len(f) - 1) // 2
-#     phases = np.random.rand(Np) * 2 * np.pi
-#     phases = np.cos(phases) + 1j * np.sin(phases)
-#     f[1 : Np + 1] *= phases
-#     f[-1 : -1 - Np : -1] = np.conj(f[1 : Np + 1])
-#     return np.fft.ifft(f).real
-
 def fftnoise(f):
-    f = np.fft.fft(f)
+    f = np.array(f, dtype="complex")
+    Np = (len(f) - 1) // 2
+    # print('Np : ', Np)
+    phases = np.random.rand(Np) * 2 * np.pi
+    phases = np.cos(phases) + 1j * np.sin(phases)
+    f[1 : Np + 1] *= phases
+    f[-1 : -1 - Np : -1] = np.conj(f[1 : Np + 1])
     return np.fft.ifft(f).real
+
+# def fftnoise(f):
+#     f = np.fft.fft(f)
+#     return np.fft.ifft(f).real
 
 def band_limited_noise(min_freq, max_freq, samples=1024, samplerate=1):
     freqs = np.abs(np.fft.fftfreq(samples, 1 / samplerate))
@@ -36,7 +37,7 @@ def band_limited_noise(min_freq, max_freq, samples=1024, samplerate=1):
     return fftnoise(f)
 
 noise_len = 5 # seconds
-noise = band_limited_noise(min_freq=4000, max_freq = 12000, samples=len(data), samplerate=rate) *10
+noise = band_limited_noise(min_freq=500, max_freq = 10000, samples=len(data), samplerate=rate) * 10
 noise_clip = noise[:rate*noise_len]
 audio_clip_band_limited = data+noise
 
@@ -178,13 +179,16 @@ fig = plt.figure(figsize = (16, 6))
 ax1 = fig.add_subplot(2, 2, 1)
 ax2 = fig.add_subplot(2, 2, 2)
 ax3 = fig.add_subplot(2, 2, 3)
+ax4 = fig.add_subplot(2, 2, 4)
 
 librosa.display.waveplot(data, ax = ax1)
 librosa.display.waveplot(output, ax = ax2)
 librosa.display.waveplot(audio_clip_band_limited, ax = ax3)
+librosa.display.waveplot(noise, ax = ax4)
 ax1.set(title = 'original')
 ax2.set(title = 'denoise')
 ax3.set(title = 'data with noise')
+ax4.set(title = 'noise')
 
 fig.tight_layout()
 plt.show()
