@@ -30,23 +30,11 @@ def noising(data):
     noise_create = np.random.randn(len(data))
     return noise_create
 
-# def fftnoise(data):
-#     temp = np.fft.fft(data)
-#     return np.fft.ifft(temp).real
-
-def normalize(data, axis = 0, num = 1):
+def normalize(data, axis = 0, num = 0.05):
     return sklearn.preprocessing.minmax_scale(data, axis = axis) * num
 
-# def band_limited_noise(min_freq, max_freq, samples=1024, samplerate=1):
-#     freqs = np.abs(np.fft.fftfreq(samples, 1 / samplerate))
-#     f = np.zeros(samples)
-#     f[np.logical_and(freqs >= min_freq, freqs <= max_freq)] = 1
-#     return noising(data)
-
 noise = noising(data)
-# noise = fftnoise(noise)
-# noise = band_limited_noise(4000, 12000, samples = len(data), samplerate = rate) * 10
-noise = normalize(noise, axis = 0, num = 10)
+noise = normalize(noise, axis = 0)
 
 noise_clip = noise[:rate * data_length]
 audio_clip_band_limited = noise + data
