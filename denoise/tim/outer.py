@@ -85,7 +85,7 @@ ax2 = fig.add_subplot(2, 2, 2)
 ax3 = fig.add_subplot(2, 2, 3)
 ax4 = fig.add_subplot(2, 2, 4)
 
-librosa.display.specshow(sig_mask, sr = rate, ax = ax1)
+librosa.display.specshow(f, sr = rate, ax = ax1)
 librosa.display.specshow(db_thresh, sr = rate, ax = ax2)
 librosa.display.waveplot(data, sr = rate, ax = ax3)
 librosa.display.waveplot(audio_clip_band_limited, sr = rate, ax = ax4)
