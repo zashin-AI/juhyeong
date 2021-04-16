@@ -17,14 +17,37 @@ import_test()
 # out_dir(wav파일을 합쳐서 저장할 경로+파일명까지) = "C:/nmb/nmb_data/combine_test/F3_sum.wav"
 
 # 1) wav일 때
-path_wav = 'D:/nmb_test/test_wav/'
-path_out = 'D:/nmb_test/test_sum/test_01_wav_sum.wav'
-voice_sum(form='wav', audio_dir=path_wav, save_dir=None, out_dir=path_out)
-# 잘 되는 것 확인!
+# path_wav = 'D:/nmb_test/test_wav/'
+# path_out = 'D:/nmb_test/test_sum/test_01_wav_sum.wav'
+# voice_sum(form='wav', audio_dir=path_wav, save_dir=None, out_dir=path_out)
+# # 잘 되는 것 확인!
 
-# 2) flac일 때
-path_flac = 'D:/nmb_test/test_flac/'
-path_save = 'D:/nmb_test/test_flac_to_wav/'
-path_out = 'D:/nmb_test/test_sum/test_02_flac_to_wave_sum.wav'
-voice_sum(form='flac', audio_dir=path_flac, save_dir=path_save, out_dir=path_out)
-# 잘 되는 것 확인!
+# # 2) flac일 때
+# audio_dir = 'D:/nmb_test/test_flac/'
+# save_dir = 'D:/nmb_test/test_flac_to_wav/'
+# out_dir = 'D:/nmb_test/test_sum/test_02_flac_to_wave_sum.wav'
+# voice_sum(form='flac', audio_dir=path_flac, save_dir=path_save, out_dir=path_out)
+# # 잘 되는 것 확인!
+
+# for i in range(1, 33):
+#     try:
+#         if not(os.path.isdir('c:/nmb/nmb_data/pansori/m' + str(i))):
+#             os.makedirs(os.path.join('c:/nmb/nmb_data/pansori/m' + str(i)))
+#     except OSError as e:
+#         if e.errno != errno.EEXIST:
+#             print("Failed to create directory!!!!!")
+#             raise
+
+
+# for i in range(1, 33):
+#     form = 'flac'   
+#     audio_dir = 'c:/nmb/nmb_data/pansori_original/pansori_male/m' + str(i) + '/'
+#     save_dir = 'c:/nmb/nmb_data/pansori/male_wav/m' + str(i) + '/'
+#     out_dir = 'c:/nmb/nmb_data/pansori/male/pansori_male_' + str(i) + '.wav'
+
+#     voice_sum(
+#         form = form,
+#         audio_dir = audio_dir,
+#         save_dir = save_dir,
+#         out_dir = out_dir
+#     )

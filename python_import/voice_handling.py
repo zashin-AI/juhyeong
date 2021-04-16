@@ -11,13 +11,14 @@ def import_test():
 
 # ---------------------------------------------------------------
 # voice_sum: 오디오 한 wav 파일로 합쳐서 저장하기
-
-# example
-# form(파일 형식): 'wav' or 'flac'
-# audio_dir(여러 오디오가 있는 파일경로) = 'C:/nmb/nmb_data/F1F2F3/F3/'
-# save_dir(flac일 경우 wav파일로 저장할 경로) = 'C:/nmb/nmb_data/F1F2F3/F3_to_wave/'
-# out_dir(wav파일을 합쳐서 저장할 경로+파일명) = "C:/nmb/nmb_data/combine_test/F3_sum.wav"
-
+'''
+Args :
+    example
+    form(파일 형식) : 'wav' or 'flac'
+    audio_dir(여러 오디오가 있는 파일경로) : 'C:/nmb/nmb_data/F1F2F3/F3/'
+    save_dir(flac일 경우 wav파일로 저장할 경로) = 'C:/nmb/nmb_data/F1F2F3/F3_to_wave/'
+    out_dir(wav파일을 합쳐서 저장할 경로+파일명) = "C:/nmb/nmb_data/combine_test/F3_sum.wav"
+'''
 def voice_sum(form, audio_dir, save_dir, out_dir):
     if form =='flac':
         infiles = librosa.util.find_files(audio_dir)
@@ -78,6 +79,29 @@ def voice_split(origin_dir, threshold, out_dir):
         print(start, end)
         chunk = audio[start:end]
         filename = out_dir + w_id + f'{counter}.wav'
+        chunk.export(filename, format='wav')
+        counter += 1
+        start += threshold
+    print('==== wav split done ====')
+
+
+def voice_split_1m(origin_dir, threshold, end_threshold, out_dir):
+    audio = AudioSegment.from_file(origin_dir)
+    _, w_id = os.path.split(origin_dir)
+    w_id = w_id[:-4]
+    lengaudio = len(audio)
+    # 임계점 설정(1s = 1000ms)
+    start = 0
+    threshold = threshold
+    end = 0
+    counter = 0
+    end_threshold = end_threshold
+    # 본격적인 잘라서 저장하기
+    while start < end_threshold:
+        end += threshold
+        print(start, end)
+        chunk = audio[start:end]
+        filename = out_dir + w_id + f'_{counter}.wav'
         chunk.export(filename, format='wav')
         counter += 1
         start += threshold
