@@ -85,7 +85,7 @@ def voice_split(origin_dir, threshold, out_dir):
     print('==== wav split done ====')
 
 
-def voice_split_1m(origin_dir, threshold, end_threshold, out_dir):
+def voice_split_2m(origin_dir, threshold, end_threshold, out_dir):
     audio = AudioSegment.from_file(origin_dir)
     _, w_id = os.path.split(origin_dir)
     w_id = w_id[:-4]

@@ -2,7 +2,7 @@ import librosa
 from pydub import AudioSegment
 import soundfile as sf
 import os
-from voice_handling import import_test, voice_split, voice_split_1m
+from voice_handling import import_test, voice_split, voice_split_2m
 
 import_test()
 # ==== it will be great ====
@@ -23,14 +23,12 @@ import_test()
 # 잘 된다잉~
 
 
-for i in range(1, 33):
-    origin_dir = 'c:/nmb/nmb_data/pansori/male/pansori_male_' + str(i) + '.wav'
+for i in range(1, 2):
+    origin_dir = 'c:/nmb/nmb_data/pansori/female/less_2min/pansori_female_less_2min_' + str(i) + '.wav'
     threshold = 5000
-    end_threshold = 60000
-    out_dir = 'c:/nmb/nmb_data/pansori/male/male_1m/'
+    out_dir = 'c:/nmb/nmb_data/pansori/female/less_2min/'
     
-    voice_split_1m(
+    voice_split(
         origin_dir = origin_dir,
         threshold = threshold,
-        end_threshold = end_threshold,
         out_dir = out_dir)
