@@ -22,9 +22,9 @@ reduce_noise = nr.reduce_noise(
     hop_length=128,
     win_length=512)
 
-sf.write(
-    'c:/nmb/nmb_data/reduce_noise_M5.wav', reduce_noise, rate
-)
+# sf.write(
+#     'c:/nmb/nmb_data/reduce_noise_M5.wav', reduce_noise, rate
+# )
 
 fig = plt.figure(figsize = (16, 6))
 ax1 = fig.add_subplot(2, 2, 1)
@@ -37,13 +37,3 @@ librosa.display.waveplot(reduce_noise, sr = rate, ax = ax3)
 
 fig.tight_layout()
 plt.show()
-
-# import sys
-# sys.path.append(
-#     'c:/nmb/nada/'
-# )
-
-# import function.datasave as ds
-# data, label = ds.load_data_mfcc(
-#     'c:/nmb/nmb_data/', 'wav', 1
-# )
