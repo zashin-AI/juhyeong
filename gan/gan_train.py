@@ -18,8 +18,7 @@ def train_model(sampling_rate = 22050,
                 use_batch_norm = False,
                 discriminator_learning_rate = 0.00004,
                 generator_learning_rate = 0.00004,
-                discriminator_extra_steps = 5,
-                phaseshuffle_samples = 0):
+                discriminator_extra_steps = 5):
     
     '''
     Train the conditional WaveGAN architecture.
@@ -42,7 +41,7 @@ def train_model(sampling_rate = 22050,
         discriminator_learning_rate (float): Discriminator learning rate.
         generator_learning_rate (float): Generator learning rate.
         discriminator_extra_steps (int): How many steps the discriminator is trained per step of the generator.
-        phaseshuffle_samples (int): Discriminator phase shuffle. 0 for no phases shuffle.
+         (int): Discriminator phase shuffle. 0 for no phases shuffle.
     '''
 
     '''
@@ -67,7 +66,7 @@ def train_model(sampling_rate = 22050,
         Discriminator 학습률 (float) : 판별 학습률.
         generator_learning_rate (float) : 발전기 학습률.
         판별 자 _extra_steps (int) : 판별자가 생성기의 단계 당 훈련 된 단계 수.
-        phaseshuffle_samples (int) : 판별 기 위상 셔플. 위상 셔플이없는 경우 0입니다.
+         (int) : 판별 기 위상 셔플. 위상 셔플이없는 경우 0입니다.
     '''
 
     #get the number of classes from the audio folder
@@ -77,13 +76,11 @@ def train_model(sampling_rate = 22050,
     #build the discriminator
     #discriminator(판별자) 구축
     discriminator = gan_architecture.discriminator(architecture_size=architecture_size,
-                                                    phaseshuffle_samples = phaseshuffle_samples,
                                                     n_classes = n_classes)
     #build the generator
     #generator(생성자) 구축
     generator = gan_architecture.generator(architecture_size=architecture_size,
                                                 z_dim = latent_dim,
-                                                use_batch_norm = use_batch_norm,
                                                 n_classes = n_classes)
     #set the optimizers
     #discriminator(판별자), generator(생성자) optimizers 설정
@@ -109,8 +106,8 @@ def train_model(sampling_rate = 22050,
     #it makes it easier to retrieve the parameters/hyperparameters afterwards
     gan_utils.write_parameters(sampling_rate, n_batches, batch_size, audio_path, checkpoints_path, architecture_size,
                 path_to_weights, resume_training, override_saved_model, synth_frequency, save_frequency,
-                latent_dim, use_batch_norm, discriminator_learning_rate, generator_learning_rate,
-                discriminator_extra_steps, phaseshuffle_samples)
+                latent_dim,discriminator_learning_rate, generator_learning_rate,
+                discriminator_extra_steps)
     
     #create the dataset from the class folders in '/audio'
     audio, labels = gan_utils.create_dataset(audio_path, sampling_rate, architecture_size, checkpoints_path)
@@ -129,7 +126,7 @@ def train_model(sampling_rate = 22050,
 
 if __name__ == '__main__':
     train_model(sampling_rate = 22050,
-                n_batches = 10,
+                n_batches = 10000,
                 batch_size = 4,
                 audio_path = 'audio/',
                 checkpoints_path = 'checkpoints/',
@@ -140,8 +137,6 @@ if __name__ == '__main__':
                 synth_frequency = 200,
                 save_frequency = 200,
                 latent_dim = 100,
-                use_batch_norm = True,
                 discriminator_learning_rate = 0.0002,
                 generator_learning_rate = 0.0002,
-                discriminator_extra_steps = 5,
-                phaseshuffle_samples = 0)
+                discriminator_extra_steps = 5)
