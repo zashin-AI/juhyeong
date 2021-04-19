@@ -52,28 +52,31 @@ class WGANGP(keras.Model):
     def generator_loss(self, fake_img): # 생성자 loss
         return -tf.reduce_mean(fake_img) # 생성자에서 만든 이미지에 대한 loss 값만 포함
     
-    def gradient_penalty(self, batch_size, real_images, fake_images, labels):
-        """ Calculates the gradient penalty.
+    def gradient_penalty(self, batch_size, real_images, fake_images, labels): # loss 의 기울기가 발산하는 것을 막아주면서 정규화를 시켜준다
+        """
+        Calculates the gradient penalty.
         This loss is calculated on an interpolated image
         and added to the discriminator loss.
         """
         # get the interplated image
-        alpha = tf.random.normal([batch_size, 1, 1], 0.0, 1.0)
-        diff = fake_images - real_images
+        alpha = tf.random.normal([batch_size, 1, 1], 0.0, 1.0) # 난수 생성
+        diff = fake_images - real_images # 두 이미지간의 차이값을 가져옴 : diff 서로 다른 두 데이터간의 차이를 판별
         interpolated = real_images + alpha * diff
-        with tf.GradientTape() as gp_tape:
+        with tf.GradientTape() as gp_tape: # 입력변수에 연산 된 기울기 값을 구하기 위함
             gp_tape.watch(interpolated)
-            # 1. Get the discriminator output for this interpolated image.
+            # 1. Get the discriminator output for this interpolated image. : 판별자에서 나오는 output 을 가져옴
             pred = self.discriminator([interpolated, labels], training=True)
 
         # 2. Calculate the gradients w.r.t to this interpolated image.
-        grads = gp_tape.gradient(pred, [interpolated])[0]
+        grads = gp_tape.gradient(pred, [interpolated])[0] # 미분값을 계산
+
         # 3. Calcuate the norm of the gradients
-        norm = tf.sqrt(tf.reduce_sum(tf.square(grads), axis=[1, 2]))
-        gp = tf.reduce_mean((norm - 1.0) ** 2)
+        norm = tf.sqrt(tf.reduce_sum(tf.square(grads), axis=[1, 2])) # 정규화를 하기 위해 필요한 값을 생성
+        gp = tf.reduce_mean((norm - 1.0) ** 2) # 해당 값의 평균을 구함
         return gp
     
     def train_batch(self, x, y, batch_size):
+        
         #get a random indexes for the batch
         idx = np.random.randint(0, x.shape[0], batch_size)
         real_images = x[idx]
