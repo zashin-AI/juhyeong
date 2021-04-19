@@ -32,7 +32,7 @@ class WGANGP(keras.Model):
         self.d_optimizer=d_optimizer
         self.g_optimizer=g_optimizer
 
-    def compile(self, d_optimizer, g_optimizer): # 생성, 파판별자의 opti 와 loss 로 컴파일
+    def compile(self, d_optimizer, g_optimizer): # 생성, 판별자의 opti 와 loss 로 컴파일
         super(WGANGP, self).compile()
         self.d_optimizer = d_optimizer
         self.g_optimizer = g_optimizer
@@ -64,6 +64,7 @@ class WGANGP(keras.Model):
         interpolated = real_images + alpha * diff
         with tf.GradientTape() as gp_tape: # 입력변수에 연산 된 기울기 값을 구하기 위함
             gp_tape.watch(interpolated)
+
             # 1. Get the discriminator output for this interpolated image. : 판별자에서 나오는 output 을 가져옴
             pred = self.discriminator([interpolated, labels], training=True)
 
@@ -75,27 +76,27 @@ class WGANGP(keras.Model):
         gp = tf.reduce_mean((norm - 1.0) ** 2) # 해당 값의 평균을 구함
         return gp
     
-    def train_batch(self, x, y, batch_size):
-        
+    def train_batch(self, x, y, batch_size): # 각 배치에서 훈련을 실시할 때의 step
+
         #get a random indexes for the batch
         idx = np.random.randint(0, x.shape[0], batch_size)
-        real_images = x[idx]
+        real_images = x[idx] # 실제 이미지에서 랜덤한 idx 를 가져와서 훈련
         labels = y[idx]
         
         # For each batch, we are going to perform the
         # following steps as laid out in the original paper.
-        # 1. Train the generator and get the generator loss
-        # 2. Train the discriminator and get the discriminator loss
-        # 3. Calculate the gradient penalty
-        # 4. Multiply this gradient penalty with a constant weight factor
-        # 5. Add gradient penalty to the discriminator loss
-        # 6. Return generator and discriminator losses as a loss dictionary.
+        # 1. Train the generator and get the generator loss # 생성자 훈련하고 loss 값 반환
+        # 2. Train the discriminator and get the discriminator loss # 판별자 훈련하고 loss 값 반환
+        # 3. Calculate the gradient penalty # gp 를 계산
+        # 4. Multiply this gradient penalty with a constant weight factor # 상수 형태의 가중치값을 gp 와 곱함
+        # 5. Add gradient penalty to the discriminator loss # 판별자 loss 와 gp 를 더함
+        # 6. Return generator and discriminator losses as a loss dictionary. # dict 형태로 생성자와 판별자 loss 들을 반환함
 
-        # Train discriminator first. The original paper recommends training
+        # Train discriminator first. The original paper recommends training : 판별자를 먼저 훈련
         # the discriminator for `x` more steps (typically 5) as compared to
-        # one step of the generator.
-        for i in range(self.d_steps):
-            # Get the latent vector
+        # one step of the generator. : 생성자의 한 step 마다 판별자와 비교함
+        for i in range(self.d_steps): # 판별자의 step 동안
+            # Get the latent vector : latent vector - 정규화 처리 된 벡터값
             random_latent_vectors = tf.random.normal(
                 shape=(batch_size, self.latent_dim)
             )
@@ -103,16 +104,22 @@ class WGANGP(keras.Model):
             with tf.GradientTape() as tape:
                 # Generate fake images from the latent vector
                 fake_images = self.generator([random_latent_vectors, labels], training=True)
+
                 # Get the logits for the fake images
                 fake_logits = self.discriminator([fake_images, labels], training=True)
+
                 # Get the logits for real images
                 real_logits = self.discriminator([real_images, labels], training=True)
+
                 # Calculate discriminator loss using fake and real logits
                 d_cost = self.d_loss_fn(real_img=real_logits, fake_img=fake_logits)
+
                 # Calculate the gradient penalty
                 gp = self.gradient_penalty(batch_size, real_images, fake_images, labels) 
+
                 # Add the gradient penalty to the original discriminator loss
                 d_loss = d_cost + gp * self.gp_weight
+                
 
             # Get the gradients w.r.t the discriminator loss
             d_gradient = tape.gradient(d_loss, self.discriminator.trainable_variables)
