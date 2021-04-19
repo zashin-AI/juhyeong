@@ -75,8 +75,7 @@ def create_date_folder(checkpoints_path):
 #사용한 훈련 인수를 체크 포인트 폴더에 저장합니다 (나중에 하이퍼 매개 변수를 쉽게 검색 할 수 있도록합니다)
 def write_parameters(sampling_rate, n_batches, batch_size, audio_path, checkpoints_path, 
                 architecture_size, path_to_weights, resume_training, override_saved_model, synth_frequency, 
-                save_frequency, latent_dim, use_batch_norm, discriminator_learning_rate, generator_learning_rate,
-                discriminator_extra_steps, phaseshuffle_samples):
+                save_frequency, latent_dim, use_batch_norm, discriminator_learning_rate, generator_learning_rate):
     print(f'Saving the training parameters to disk in {checkpoints_path}/training_parameters.txt')
     arguments = open(f'{checkpoints_path}/training_parameters.txt', "w")
     arguments.write(f'sampling_rate = {sampling_rate}\n')
@@ -94,6 +93,4 @@ def write_parameters(sampling_rate, n_batches, batch_size, audio_path, checkpoin
     arguments.write(f'use_batch_norm = {use_batch_norm}\n')
     arguments.write(f'discriminator_learning_rate = {discriminator_learning_rate}\n')
     arguments.write(f'generator_learning_rate = {generator_learning_rate}\n')
-    arguments.write(f'discriminator_extra_steps = {discriminator_extra_steps}\n')
-    arguments.write(f'phaseshuffle_samples = {phaseshuffle_samples}')
     arguments.close()
