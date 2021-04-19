@@ -102,7 +102,7 @@ class WGANGP(keras.Model):
             )
 
             with tf.GradientTape() as tape:
-                # Generate fake images from the latent vector
+                # Generate fake images from the latent vector : 정규화 된 벡터값으로 이미지를 생성
                 fake_images = self.generator([random_latent_vectors, labels], training=True)
 
                 # Get the logits for the fake images
@@ -119,7 +119,7 @@ class WGANGP(keras.Model):
 
                 # Add the gradient penalty to the original discriminator loss
                 d_loss = d_cost + gp * self.gp_weight
-                
+
 
             # Get the gradients w.r.t the discriminator loss
             d_gradient = tape.gradient(d_loss, self.discriminator.trainable_variables)
@@ -128,25 +128,34 @@ class WGANGP(keras.Model):
                 zip(d_gradient, self.discriminator.trainable_variables)
             )
             
-        # Train the generator now.
+        # Train the generator now. : 생성자를 훈련
         # Get the latent vector
         random_latent_vectors = tf.random.normal(shape=(batch_size, self.latent_dim))
 
         with tf.GradientTape() as tape:
-            # Generate fake images using the generator
+            # Generate fake images using the generator : 생성자를 통해 이미지를 생성
             generated_images = self.generator([random_latent_vectors, labels], training=True)
+
             # Get the discriminator logits for fake images
             gen_img_logits = self.discriminator([generated_images, labels], training=True)
+
             # Calculate the generator loss
             g_loss = self.g_loss_fn(gen_img_logits)
 
+            # 판별자를 훈련 할 때엔 latent vector 를 이용해 이미지를 생성하고 판별자와 생성자간의 loss 값을 비교 분석하며,
+            # gp 로 정규화를 시켜준다. 그 후, d_loss 부분을 이용해 최종적인 loss 를 구함
+            # 생성자를 훈련 할 때엔 생성자 자체를 이용해 이미지를 생성하고 생성자의 loss 값만을 반환한다
+
+
         # Get the gradients w.r.t the generator loss
-        gen_gradient = tape.gradient(g_loss, self.generator.trainable_variables)
+        gen_gradient = tape.gradient(g_loss, self.generator.trainable_variables) # 생성자의 기울기를 계산
+
         # Update the weights of the generator using the generator optimizer
         self.g_optimizer.apply_gradients(
             zip(gen_gradient, self.generator.trainable_variables)
-        )
-        return d_loss, g_loss
+        ) # 생성자 opti 를 이용해 가중치를 업데이트한다
+        return d_loss, g_loss # 최종적으로 판별자와 생성자의 loss 값을 반환
+
     
     def train(self, x, y, batch_size, batches, synth_frequency, save_frequency,
               sampling_rate, n_classes, checkpoints_path, override_saved_model):
