@@ -3,6 +3,7 @@ import librosa.display
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import sklearn
 
 ########################## audio visualization ############################
 gan, sr1 = librosa.load(
@@ -16,13 +17,32 @@ gan2, sr2 = librosa.load(
 
 # gan = np.abs(librosa.stft(gan, n_fft = 512, hop_length = 128))
 # gan = np.abs(np.fft.fft(gan))
+# gan = librosa.feature.melspectrogram(
+#     gan,
+#     sr = sr1,
+#     n_fft = 512,
+#     hop_length = 128,
+#     win_length = 512
+# )
+def normalize(x, axis=0):
+    return sklearn.preprocessing.minmax_scale(x, axis=axis)
+
+gan = librosa.feature.mfcc(
+    gan,
+    sr = sr1
+)
+gan = normalize(gan)
 
 fig = plt.figure(figsize = (16, 6))
 
-librosa.display.waveplot(gan, sr = sr1)
+# librosa.display.waveplot(gan, sr = sr1)
 # librosa.display.waveplot(gan2, sr = sr2, ax = ax2)
+librosa.display.specshow(gan, sr = sr1)
+
 # plt.plot(gan)
 # plt.plot(gan2, ax = ax2)
+
+
 
 fig.tight_layout()
 plt.show()
