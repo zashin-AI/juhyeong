@@ -1,34 +1,46 @@
 import librosa
 import librosa.display
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 
-# gan, sr1 = librosa.load(
-#     'c:/nmb/nmb_data/audio_data/gan/800_batch_synth_class_0.wav'
-# )
+########################## audio visualization ############################
+gan, sr1 = librosa.load(
+    'c:/nmb/nmb_data/38000_batch_synth_class_0.wav'
+)
+# gan = gan * 100
 
-# gan_denoise, sr2 = librosa.load(
-#     'c:/nmb/nmb_data/gan_denoise/_noise/800_batch_synth_class_0_noise.wav'
-# )
-
-# fig = plt.figure(figsize = (16, 6))
-# ax1 = fig.add_subplot(2, 1, 1)
-# ax2 = fig.add_subplot(2, 1, 2)
-
-# librosa.display.waveplot(gan, sr = sr1, ax = ax1)
-# librosa.display.waveplot(gan_denoise, sr = sr2, ax = ax2)
-
-# fig.tight_layout()
-# plt.show()
-
-df = pd.read_csv(
-    'c:/nmb/nmb_data/loss.csv'
+gan2, sr2 = librosa.load(
+    'c:/nmb/nmb_data/39000_batch_synth_class_0.wav'
 )
 
-print(df.info())
-print(df)
+# gan = np.abs(librosa.stft(gan, n_fft = 512, hop_length = 128))
+# gan = np.abs(np.fft.fft(gan))
 
-df_vis = df['d_loss'].plot(title = 'd_loss')
-fig = df_vis.get_figure()
-fig.set_size_inches(14, 8)
+fig = plt.figure(figsize = (16, 6))
+
+librosa.display.waveplot(gan, sr = sr1)
+# librosa.display.waveplot(gan2, sr = sr2, ax = ax2)
+# plt.plot(gan)
+# plt.plot(gan2, ax = ax2)
+
+fig.tight_layout()
 plt.show()
+
+######################### csv visualization ############################
+
+# df = pd.read_csv(
+#     'c:/nmb/nmb_data/loss_2.csv'
+# )
+
+# print(df.info())
+# print(df)
+
+# fig = plt.figure(figsize = (16, 6))
+# df_vis_d = df['d_loss'].plot()
+# df_vis_g = df['g_loss'].plot()
+# ax1 = df_vis_d.get_figure()
+# ax2 = df_vis_g.get_figure()
+
+# plt.legend(loc = 'best')
+# plt.show()

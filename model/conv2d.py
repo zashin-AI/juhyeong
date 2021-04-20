@@ -5,13 +5,15 @@ import sklearn
 import datetime
 
 from keras import backend as K
+
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential, load_model, Model
 from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, AveragePooling2D, Dropout, Activation, Flatten, Add, Input, Concatenate
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from tensorflow.python.keras.callbacks import ModelCheckpoint
-
 
 def normalize(x, axis=0):
     return sklearn.preprocessing.minmax_scale(x, axis=axis)
@@ -19,17 +21,21 @@ def normalize(x, axis=0):
 start_now = datetime.datetime.now()
 
 # 데이터 불러오기
-# f_ds = np.load('C:/nmb/nmb_data/npy/unbalance_female_data.npy')
-# m_ds = np.load('C:/nmb/nmb_data/npy/unbalance_male_data.npy')
-# f_lb = np.load('C:/nmb/nmb_data/npy/unbalance_female_label.npy')
-# m_lb = np.load('C:/nmb/nmb_data/npy/unbalance_male_label.npy')
+f_ds = np.load('C:/nmb/nmb_data/npy/unbalance_female_data.npy')
+m_ds = np.load('C:/nmb/nmb_data/npy/female_mel_data.npy')
+f_lb = np.load('C:/nmb/nmb_data/npy/unbalance_female_label.npy')
+m_lb = np.load('C:/nmb/nmb_data/npy/female_mel_label.npy')
 
-# x = np.concatenate([f_ds, m_ds], 0)
-# y = np.concatenate([f_lb, m_lb], 0)
+print(np.unique(f_lb))
+print(np.unique(m_lb))
+print(f_lb)
+print(m_lb)
 
-x = np.load('c:/nmb/nmb_data/npy/unbalance_male_data.npy')
-y = np.load('c:/nmb/nmb_data/npy/unbalance_male_label.npy')
-print(x.shape, y.shape) # (2141, 128, 862) (2141,)
+x = np.concatenate([f_ds, m_ds], 0)
+y = np.concatenate([f_lb, m_lb], 0)
+
+print(x.shape, y.shape)
+
 
 # define function
 def recall(y_target, y_pred):
@@ -124,17 +130,17 @@ print(x_train.shape[1:])    # (128, 862, 1)
 model.summary()
 
 # 컴파일, 훈련
-model.compile(optimizer='adam', loss="sparse_categorical_crossentropy", metrics=['acc'])
+model.compile(optimizer='adam', loss="sparse_categorical_crossentropy", metrics=['acc', f1score])
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
 path = 'C:/nmb/nmb_data/h5/model_Conv2D_mels2.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
-history = model.fit(x_train, y_train, epochs=1, batch_size=16, validation_split=0.2, callbacks=[es, lr, mc])
+history = model.fit(x_train, y_train, epochs=300, batch_size=16, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
 model.load_weights('C:/nmb/nmb_data/h5/model_Conv2D_mels2.h5')
 # result = model.evaluate(x_test, y_test, batch_size=16)
-loss, acc, f1_score = model.evaluate(x_test, y_test, batch_size=8)
+loss, acc, f1score = model.evaluate(x_test, y_test, batch_size=8)
 # print("loss : ", result[0])
 # print("acc : ", result[1])
 pred_pathAudio = 'C:/nmb/nmb_data/predict/'
@@ -179,4 +185,8 @@ for pred_pathAudio in pred :
                 if name == 'M' :
                     count_m = count_m + 1
 
-print('loss: {:.3f}, accuracy: {:.3f}, f1score: {:.3f}'.format(loss, acc, f1_score))
+print("43개 여성 목소리 중 "+str(count_f)+"개 정답")
+print("42개 남성 목소리 중 "+str(count_m)+"개 정답")
+print("10개 이상치 목소리 중 "+str(count_odd)+"개 정답")
+print('loss: {:.3f}, accuracy: {:.3f}, f1score: {:.3f}'.format(loss, acc, f1score))
+print(datetime.datetime.now() - start_now)

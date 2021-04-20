@@ -122,7 +122,7 @@ def train_model(sampling_rate = 22050,
 
 if __name__ == '__main__':
     train_model(sampling_rate = 22050,
-                n_batches = 3,
+                n_batches = 30,
                 batch_size = 4,
                 audio_path = 'c:/nmb/nmb_data/audio_data_noise/',
                 checkpoints_path = 'c:/nmb/nmb_data/checkpoints2/',
