@@ -148,4 +148,4 @@ def discriminator(architecture_size='audio_size',
     return discriminator
 
 model = discriminator()
-# model.summary()
+model.summary()

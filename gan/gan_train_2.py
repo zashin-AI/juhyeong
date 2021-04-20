@@ -125,7 +125,7 @@ if __name__ == '__main__':
                 n_batches = 10001,
                 batch_size = 4,
                 audio_path = 'c:/nmb/nmb_data/audio_data_noise/',
-                checkpoints_path = 'c:/nmb/nmb_data/checkpoints/',
+                checkpoints_path = 'c:/nmb/nmb_data/checkpoints2/',
                 architecture_size = 'audio_size',
                 path_to_weights = 'model_weights.h5',
                 resume_training = False,

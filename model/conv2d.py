@@ -129,13 +129,14 @@ es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, v
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
 path = 'C:/nmb/nmb_data/h5/model_Conv2D_mels2.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
-history = model.fit(x_train, y_train, epochs=300, batch_size=16, validation_split=0.2, callbacks=[es, lr, mc])
+history = model.fit(x_train, y_train, epochs=1, batch_size=16, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
 model.load_weights('C:/nmb/nmb_data/h5/model_Conv2D_mels2.h5')
-result = model.evaluate(x_test, y_test, batch_size=16)
-print("loss : ", result[0])
-print("acc : ", result[1])
+# result = model.evaluate(x_test, y_test, batch_size=16)
+loss, acc, f1_score = model.evaluate(x_test, y_test, batch_size=8)
+# print("loss : ", result[0])
+# print("acc : ", result[1])
 pred_pathAudio = 'C:/nmb/nmb_data/predict/'
 files = librosa.util.find_files(pred_pathAudio, ext=['wav'])
 files = np.asarray(files)
@@ -178,3 +179,4 @@ for pred_pathAudio in pred :
                 if name == 'M' :
                     count_m = count_m + 1
 
+print('loss: {:.3f}, accuracy: {:.3f}, f1score: {:.3f}'.format(loss, acc, f1_score))
