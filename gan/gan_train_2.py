@@ -123,17 +123,10 @@ def train_model(sampling_rate = 22050,
 
 if __name__ == '__main__':
     train_model(sampling_rate = 22050,
-<<<<<<< HEAD
-                n_batches = 50001,
-                batch_size = 4,
-                audio_path = 'c:/nmb/nmb_data/gan_denoise/F/',
-                checkpoints_path = 'c:/nmb/nmb_data/checkpoints/',
-=======
                 n_batches = 3,
                 batch_size = 4,
                 audio_path = 'c:/nmb/nmb_data/audio_data_noise/',
                 checkpoints_path = 'c:/nmb/nmb_data/checkpoints2/',
->>>>>>> a0fd4aad21846877bf9e8760cd0e6777351255d4
                 architecture_size = 'audio_size',
                 path_to_weights = 'model_weights.h5',
                 resume_training = False,
