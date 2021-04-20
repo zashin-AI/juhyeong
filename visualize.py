@@ -6,18 +6,18 @@ import pandas as pd
 import sklearn
 
 gan, sr = librosa.load(
-    'c:/nmb/nmb_data/50000_batch_synth_class_3.wav'
+    'c:/nmb/nmb_data/predict/F/F7.wav'
 )
 
 # gan = np.abs(librosa.stft(gan, n_fft = 512, hop_length = 128))
 # gan = np.abs(np.fft.fft(gan))
-# gan = librosa.feature.melspectrogram(
-#     gan,
-#     sr = sr1,
-#     n_fft = 512,
-#     hop_length = 128,
-#     win_length = 512
-# )
+gan = librosa.feature.melspectrogram(
+    gan,
+    sr = sr,
+    n_fft = 512,
+    hop_length = 128,
+    win_length = 512
+)
 # def normalize(x, axis=0):
 #     return sklearn.preprocessing.minmax_scale(x, axis=axis)
 
@@ -27,16 +27,16 @@ gan, sr = librosa.load(
 # )
 # gan = normalize(gan)
 
-fig = plt.figure(figsize = (16, 6))
+# fig = plt.figure(figsize = (16, 6))
 
-librosa.display.waveplot(gan, sr = sr)
+# librosa.display.waveplot(gan, sr = sr)
 # librosa.display.waveplot(gan2, sr = sr2, ax = ax2)
-# librosa.display.specshow(gan, sr = sr)
+librosa.display.specshow(gan, sr = sr)
 
 # plt.plot(gan)
 # plt.plot(gan2, ax = ax2)
 
-fig.tight_layout()
+# .tight_layout()
 plt.show()
 
 ######################### csv visualization ############################
