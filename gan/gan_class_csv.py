@@ -162,7 +162,6 @@ class WGANGP(keras.Model):
               sampling_rate, n_classes, checkpoints_path, override_saved_model):
         d_loss_list = list()
         g_loss_list = list()
-        # epochs = list()
         
         for batch in range(batches):
             start_time = time.time()
@@ -172,7 +171,19 @@ class WGANGP(keras.Model):
             print(f'Batch: {batch} == Batch size: {batch_size} == Time elapsed: {time_batch:.2f} == d_loss: {d_loss:.4f}, g_loss: {g_loss:.4f}')
             d_loss_list.append(float(d_loss))
             g_loss_list.append(float(g_loss))
-            # epochs.append(batch)
+            
+            # pandas dataframe
+            d_loss_df = pd.DataFrame(d_loss_list)
+            g_loss_df = pd.DataFrame(g_loss_list)
+
+            d_loss_df.columns = ['d_loss']
+            g_loss_df.columns = ['g_loss']
+
+            gd_loss_df = pd.concat([d_loss_df, g_loss_df], axis = 1)
+
+            gd_loss_df.to_csv(
+                'c:/nmb/nmb_data/loss_2.csv', index = False
+            )
 
             #This works as a callback
             if batch % synth_frequency == 0 :
@@ -195,19 +206,3 @@ class WGANGP(keras.Model):
                     self.discriminator.save(f'{checkpoints_path}/discriminator.h5')
                     self.save_weights(f'{checkpoints_path}/model_weights.h5')
                 print(f'Model saved.')
-        
-        # pandas dataframe
-        d_loss_df = pd.DataFrame(d_loss_list)
-        g_loss_df = pd.DataFrame(g_loss_list)
-        # epochs_df = pd.DataFrame(epochs)
-
-        d_loss_df.columns = ['d_loss']
-        g_loss_df.columns = ['g_loss']
-        # epochs_df.columns = ['epochs']
-
-        # gd_loss_df = pd.concat([epochs_df, d_loss_df, g_loss_df], axis = 1)
-        gd_loss_df = pd.concat([d_loss_df, g_loss_df], axis = 1)
-
-        gd_loss_df.to_csv(
-            'c:/nmb/nmb_data/loss.csv', index = False
-        )

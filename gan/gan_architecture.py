@@ -89,7 +89,7 @@ def generator(z_dim = 100,
     return generator
 
 model = generator()
-model.summary()
+# model.summary()
 
 def discriminator(architecture_size='audio_size',
                 #   phaseshuffle_samples = 0,
