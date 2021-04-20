@@ -58,8 +58,6 @@ def train_model(sampling_rate = 22050,
         path_to_weights (str) = 모델 가중치가있는 위치 (학습 재개시)
         override_saved_model (bool) = 모델 덮어 쓰기 저장
             이전에 저장된 모델 (과거 epoch안) ?. 저장된 파일이 클 수 있습니다!
-        synth_frequency (int) : 학습 중에 샘플을 합성하려는 빈도 (배치 단위).
-        save_frequency (int) : 훈련 중 모델을 얼마나 자주 저장 하시겠습니까 (일괄).
         latent_dim (int) : 잠재 공간의 차원.
         use_batch_norm (bool) : 배치 정규화를 사용여부
         Discriminator 학습률 (float) : 판별 학습률.

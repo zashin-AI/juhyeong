@@ -120,19 +120,20 @@ def train_model(sampling_rate = 22050,
                  checkpoints_path = checkpoints_path, override_saved_model = override_saved_model,
                  sampling_rate = sampling_rate, n_classes = n_classes)
 
+
 if __name__ == '__main__':
     train_model(sampling_rate = 22050,
-                n_batches = 10001,
+                n_batches = 50001,
                 batch_size = 4,
-                audio_path = 'c:/nmb/nmb_data/audio_data_noise/',
+                audio_path = 'c:/nmb/nmb_data/gan_denoise/F/',
                 checkpoints_path = 'c:/nmb/nmb_data/checkpoints/',
                 architecture_size = 'audio_size',
                 path_to_weights = 'model_weights.h5',
                 resume_training = False,
                 override_saved_model = True,
-                synth_frequency = 100,
-                save_frequency = 100,
+                synth_frequency = 1000,
+                save_frequency = 1000,
                 latent_dim = 100,
                 discriminator_learning_rate = 0.0002,
                 generator_learning_rate = 0.0002,
-                discriminator_extra_steps = 5) 
+                discriminator_extra_steps = 5)
