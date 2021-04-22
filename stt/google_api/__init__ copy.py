@@ -71,6 +71,7 @@ class AudioFile(AudioSource):
         "Given audio file must be a filename string or a file-like object"
         # isinstance : a 가 특정 타입 및 클래스와 일치하면 True, 아니면 False 출력
         # assert(가정설명문) : 조건문과 맞지 않은 경우 해당 문자열을 출력한다 e.g. isinstance 가 False 인 경우 assertError : 'Given ~' 를 출력
+        # hasattr : object 내에 해당 name 의 속성이 존재하는 경우 bool 값을 출력
         self.filename_or_fileobject = filename_or_fileobject
         self.stream = None
         self.DURATION = None
@@ -88,11 +89,12 @@ class AudioFile(AudioSource):
             self.audio_reader = wave.open(self.filename_or_fileobject, "rb")
             self.little_endian = True
             # little_endian : 데이터를 바이트 단위로 쓸 때 작은 값이 앞에서부터 시작함
+            # wav 파일은 lttle endian 포맷을 갖고 있음
         except (wave.Error, EOFError):
             try:
                 # aiff 파일 읽기
                 self.audio_reader = aifc.open(self.filename_or_fileobject, "rb")
-                self.little_endian = False  # AIFF is a big-endian format
+                self.little_endian = False
             except (aifc.Error, EOFError):
                 # flac 파일 읽기
                 if hasattr(self.filename_or_fileobject, "read"):
@@ -683,13 +685,13 @@ def get_flac_converter():
         system, machine = platform.system(), platform.machine()
         if system == "Windows" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
             flac_converter = os.path.join(base_path, "flac-win32.exe")
-        elif system == "Darwin" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
-            flac_converter = os.path.join(base_path, "flac-mac")
-        elif system == "Linux" and machine in {"i686", "i786", "x86"}:
-            flac_converter = os.path.join(base_path, "flac-linux-x86")
-        elif system == "Linux" and machine in {"x86_64", "AMD64"}:
-            flac_converter = os.path.join(base_path, "flac-linux-x86_64")
-        else:  # no FLAC converter available
+        # elif system == "Darwin" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
+        #     flac_converter = os.path.join(base_path, "flac-mac")
+        # elif system == "Linux" and machine in {"i686", "i786", "x86"}:
+        #     flac_converter = os.path.join(base_path, "flac-linux-x86")
+        # elif system == "Linux" and machine in {"x86_64", "AMD64"}:
+        #     flac_converter = os.path.join(base_path, "flac-linux-x86_64")
+        # else:  # no FLAC converter available
             raise OSError("FLAC conversion utility not available - consider installing the FLAC command line application by running `apt-get install flac` or your operating system's equivalent")
 
     # mark FLAC converter as executable if possible
