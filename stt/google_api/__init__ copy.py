@@ -43,9 +43,11 @@ class RequestError(Exception): pass
 class UnknownValueError(Exception): pass
 
 
-class AudioSource(object):
+class AudioSource(object): # class name 이 __main__ 일 때 실행시키기 위함
     def __init__(self):
         raise NotImplementedError("this is an abstract class")
+        # raise : 예외처리를 정하고 해당 예외 문구를 출력시킨다
+        # NotImplementedError : 지원하지 않는 연산값, 구현 되지 않은 클래스
 
     def __enter__(self):
         raise NotImplementedError("this is an abstract class")
@@ -82,16 +84,17 @@ class AudioFile(AudioSource):
     def __enter__(self):
         assert self.stream is None, "This audio source is already inside a context manager"
         try:
-            # attempt to read the file as WAV
+            # wav 파일 읽기
             self.audio_reader = wave.open(self.filename_or_fileobject, "rb")
-            self.little_endian = True  # RIFF WAV is a little-endian format (most ``audioop`` operations assume that the frames are stored in little-endian form)
+            self.little_endian = True
+            # little_endian : 데이터를 바이트 단위로 쓸 때 작은 값이 앞에서부터 시작함
         except (wave.Error, EOFError):
             try:
-                # attempt to read the file as AIFF
+                # aiff 파일 읽기
                 self.audio_reader = aifc.open(self.filename_or_fileobject, "rb")
                 self.little_endian = False  # AIFF is a big-endian format
             except (aifc.Error, EOFError):
-                # attempt to read the file as FLAC
+                # flac 파일 읽기
                 if hasattr(self.filename_or_fileobject, "read"):
                     flac_data = self.filename_or_fileobject.read()
                 else:
