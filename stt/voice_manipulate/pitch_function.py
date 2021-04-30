@@ -30,7 +30,7 @@ def pitch_change(loaddir, n_steps, outdir):
                 print("Failed to create directory!!!!!")
                 raise
         for file in files:
-            data, rate = librosa.load(file, sr=22050, duration=5.0)
+            data, rate = librosa.load(file, sr=22050)
             data = librosa.effects.pitch_shift(
             data, rate, n_steps = n_steps
         )
@@ -54,7 +54,7 @@ def pitch_change(loaddir, n_steps, outdir):
                 print("Failed to create directory!!!!!")
                 raise
         for file in files:
-            data, rate = librosa.load(file, sr=22050, duration=5.0)
+            data, rate = librosa.load(file, sr=22050)
             data = librosa.effects.pitch_shift(
             data, rate, n_steps = n_steps
         )
