@@ -108,7 +108,7 @@ class AudioFile(AudioSource):
                 if os.name == "nt":  # on Windows, specify that the process is to be started without showing a console window
                     startup_info = subprocess.STARTUPINFO() # subprocess : 다른 언어로 만들어진 프로그램을 제어하기 위함
                     startup_info.dwFlags |= subprocess.STARTF_USESHOWWINDOW  # specify that the wShowWindow field of `startup_info` contains a value
-                    startup_info.wShowWindow = subprocess.SW_HIDE  # specify that the console window should be hidden
+                    startup_info.wShowWindow = subprocess.SW_HIDE  # cmd 가리기
                 else:
                     startup_info = None  # default startupinfo
                 process = subprocess.Popen([
@@ -124,7 +124,7 @@ class AudioFile(AudioSource):
                 except (aifc.Error, EOFError):
                     raise ValueError("Audio file could not be read as PCM WAV, AIFF/AIFF-C, or Native FLAC; check if file is corrupted or in another format")
                 self.little_endian = False  # AIFF is a big-endian format
-        assert 1 <= self.audio_reader.getnchannels() <= 2, "Audio must be mono or stereo"
+        assert 1 <= self.audio_reader.getnchannels() <= 2, "Audio must be mono or stereo" # 오디오 채널을 모노와 스테레오 사이즈로 줄임
         self.SAMPLE_WIDTH = self.audio_reader.getsampwidth()
 
         # 24-bit audio needs some special handling for old Python versions (workaround for https://bugs.python.org/issue12866)
