@@ -2,7 +2,6 @@ import speech_recognition as sr
 import librosa
 import soundfile as sf
 
-from tqdm.notebook import tqdm
 from hanspell import spell_checker
 from pydub import AudioSegment
 from librosa.core import audio
