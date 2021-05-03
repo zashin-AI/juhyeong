@@ -56,13 +56,14 @@ class AudioSource(object): # class name 이 __main__ 일 때 실행시키기 위
         raise NotImplementedError("this is an abstract class")
 
 class AudioFile(AudioSource):
+    
     '''
     오디오 파일을 이용한 분류 WAV, AIFF, FLAC 지원
     WAV 파일은 PCM/LPCM 포맷이어야 함.
 
     PCM/LPCM : pulse code modulation 의 약자로 음성을 부호화하는 과정
                PCM 의 목적은 아날로그 신호의 원음을 최대한 비슷하게 따라하기 위함
-               DVD 에서 많이 사용하며 여기서 더욱 개선이 된 것이 LCPM
+               DVD 에서 많이 사용하며 여기서 더욱 개선이 된 것이 LPCM
                쉽게말해 흔히 사용 되고있는 오디오 포맷이라고 생각하면 된다
     '''
 
@@ -267,69 +268,6 @@ class AudioData(object):
             finally:  # make sure resources are cleaned up
                 wav_writer.close()
         return wav_data
-
-    def get_aiff_data(self, convert_rate=None, convert_width=None):
-        """
-        Returns a byte string representing the contents of an AIFF-C file containing the audio represented by the ``AudioData`` instance.
-        If ``convert_width`` is specified and the audio samples are not ``convert_width`` bytes each, the resulting audio is converted to match.
-        If ``convert_rate`` is specified and the audio sample rate is not ``convert_rate`` Hz, the resulting audio is resampled to match.
-        Writing these bytes directly to a file results in a valid `AIFF-C file <https://en.wikipedia.org/wiki/Audio_Interchange_File_Format>`__.
-        """
-        raw_data = self.get_raw_data(convert_rate, convert_width)
-        sample_rate = self.sample_rate if convert_rate is None else convert_rate
-        sample_width = self.sample_width if convert_width is None else convert_width
-
-        # the AIFF format is big-endian, so we need to covnert the little-endian raw data to big-endian
-        if hasattr(audioop, "byteswap"):  # ``audioop.byteswap`` was only added in Python 3.4
-            raw_data = audioop.byteswap(raw_data, sample_width)
-        else:  # manually reverse the bytes of each sample, which is slower but works well enough as a fallback
-            raw_data = raw_data[sample_width - 1::-1] + b"".join(raw_data[i + sample_width:i:-1] for i in range(sample_width - 1, len(raw_data), sample_width))
-
-        # generate the AIFF-C file contents
-        with io.BytesIO() as aiff_file:
-            aiff_writer = aifc.open(aiff_file, "wb")
-            try:  # note that we can't use context manager, since that was only added in Python 3.4
-                aiff_writer.setframerate(sample_rate)
-                aiff_writer.setsampwidth(sample_width)
-                aiff_writer.setnchannels(1)
-                aiff_writer.writeframes(raw_data)
-                aiff_data = aiff_file.getvalue()
-            finally:  # make sure resources are cleaned up
-                aiff_writer.close()
-        return aiff_data
-
-    def get_flac_data(self, convert_rate=None, convert_width=None):
-        """
-        Returns a byte string representing the contents of a FLAC file containing the audio represented by the ``AudioData`` instance.
-        Note that 32-bit FLAC is not supported. If the audio data is 32-bit and ``convert_width`` is not specified, then the resulting FLAC will be a 24-bit FLAC.
-        If ``convert_rate`` is specified and the audio sample rate is not ``convert_rate`` Hz, the resulting audio is resampled to match.
-        If ``convert_width`` is specified and the audio samples are not ``convert_width`` bytes each, the resulting audio is converted to match.
-        Writing these bytes directly to a file results in a valid `FLAC file <https://en.wikipedia.org/wiki/FLAC>`__.
-        """
-        assert convert_width is None or (convert_width % 1 == 0 and 1 <= convert_width <= 3), "Sample width to convert to must be between 1 and 3 inclusive"
-
-        if self.sample_width > 3 and convert_width is None:  # resulting WAV data would be 32-bit, which is not convertable to FLAC using our encoder
-            convert_width = 3  # the largest supported sample width is 24-bit, so we'll limit the sample width to that
-
-        # run the FLAC converter with the WAV data to get the FLAC data
-        wav_data = self.get_wav_data(convert_rate, convert_width)
-        flac_converter = get_flac_converter()
-        if os.name == "nt":  # on Windows, specify that the process is to be started without showing a console window
-            startup_info = subprocess.STARTUPINFO()
-            startup_info.dwFlags |= subprocess.STARTF_USESHOWWINDOW  # specify that the wShowWindow field of `startup_info` contains a value
-            startup_info.wShowWindow = subprocess.SW_HIDE  # specify that the console window should be hidden
-        else:
-            startup_info = None  # default startupinfo
-        process = subprocess.Popen([
-            flac_converter,
-            "--stdout", "--totally-silent",  # put the resulting FLAC file in stdout, and make sure it's not mixed with any program output
-            "--best",  # highest level of compression available
-            "-",  # the input FLAC file contents will be given in stdin
-        ], stdin=subprocess.PIPE, stdout=subprocess.PIPE, startupinfo=startup_info)
-        flac_data, stderr = process.communicate(wav_data)
-        return flac_data
-
-
 class Recognizer(AudioSource):
     def __init__(self):
         """
@@ -685,13 +623,6 @@ def get_flac_converter():
         system, machine = platform.system(), platform.machine()
         if system == "Windows" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
             flac_converter = os.path.join(base_path, "flac-win32.exe")
-        # elif system == "Darwin" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
-        #     flac_converter = os.path.join(base_path, "flac-mac")
-        # elif system == "Linux" and machine in {"i686", "i786", "x86"}:
-        #     flac_converter = os.path.join(base_path, "flac-linux-x86")
-        # elif system == "Linux" and machine in {"x86_64", "AMD64"}:
-        #     flac_converter = os.path.join(base_path, "flac-linux-x86_64")
-        # else:  # no FLAC converter available
             raise OSError("FLAC conversion utility not available - consider installing the FLAC command line application by running `apt-get install flac` or your operating system's equivalent")
 
     # mark FLAC converter as executable if possible
