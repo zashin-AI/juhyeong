@@ -29,29 +29,6 @@ path_d = 'c:/nmb/nmb_data/stt_predict/octave_denoise/octave_down/octave_down_'
 
 path_list = list([path_a, path_b, path_c, path_d])
 
-# for j in path_list:
-#     if j == path_a:
-#         a = '[octave_up]'
-#     elif j == path_b:
-#         a = '[octave_down]'
-#     elif j == path_c:
-#         a = '[denoise_octave_up]'
-#     else :
-#         a = '[denoise_octave_down]'
-#     f.write(a + '\n')
-#     for i in range(1, 13):
-#         audio = sr.AudioFile(j + str(i) + '.wav')
-#         with audio as audio_file:
-#             file = r.record(audio_file)
-#         stt = r.recognize_google(file, language='ko-KR')
-#         txt.append(stt)
-#         f.write(stt + '\n')
-#         print(stt)
-#     f.write('\n')
-
-# f.close()
-
-
 for i in range(1, 13):
     for j in path_list:
         if j == path_a:
