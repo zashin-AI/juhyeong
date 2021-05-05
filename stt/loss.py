@@ -44,3 +44,8 @@ def custom_acc_function(txt_list):
     print('{} 글자 중 맞춘 글자의 갯수 : {}'.format(len(txt_list[0]), acc[0]))
     print('정답률 : {}%'.format(acc[1] * 100))
     return acc
+
+a = '가나다라마'
+b = '가마바라사사'
+
+custom_acc_function([a, b])
