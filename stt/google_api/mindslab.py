@@ -10,14 +10,16 @@ from datetime import datetime
 r = sr.Recognizer()
 
 
-origin_file = librosa.util.find_files('C:\\nmb\\nmb_data\\STT\\corpus\\noise\\', ext=['wav'])
-volume_file = librosa.util.find_files('C:\\nmb\\nmb_data\\STT\\corpus\\normal\\', ext=['wav'])
+origin_file = librosa.util.find_files('C:\\nmb\\nmb_data\\STT\\mindslab/', ext=['wav'])
+# volume_file = librosa.util.find_files('C:\\nmb\\nmb_data\\STT\\mindslab\\', ext=['wav'])
 
-file_list = [origin_file, volume_file]
+# file_list = [origin_file, volume_file]
+file_list = [origin_file]
 
 start = datetime.now()
 
-pairs = [[], [], []]
+# pairs = [[], [], []]
+pairs = [[]]
 
 a = 0 
 for k in file_list:
@@ -29,13 +31,10 @@ for k in file_list:
         thresh = int(dbfs)
         if dbfs < thresh :
             thresh = thresh - 1
-        audio_chunks = split_on_silence(sound_file,  
-            # min_silence_len= 200,
-            # silence_thresh= dbfs - 100,
-            # keep_silence= 300
-            min_silence_len= 500,
+        audio_chunks = split_on_silence(sound_file,
+            min_silence_len= 300,
             silence_thresh= dbfs - 16,
-            keep_silence= 300
+            keep_silence= 100
         )
         full_txt = []
         for i, chunk in enumerate(audio_chunks):    
@@ -60,39 +59,14 @@ for k in file_list:
 
 
 new = ''
-for i in range(len(pairs[1])):
-    new += '원본 : ' + pairs[0][i] + '\n볼륨 : ' + pairs[1][i] + '\n속도 : ' + pairs[2][i] + '\n\n'
+for i in range(len(pairs[0])):
+    new += pairs[0][0] + '\n\n'
 
-with open('C:\\nmb\\nmb_data\\STT\\corpus500_16_300.txt', 'wt') as f: f.writelines(new)        
+with open('C:\\nmb\\nmb_data\\STT\\' + str(pairs[0][0]) + '.txt', 'wt') as f: f.writelines(new)        
 
 end = datetime.now()
 
 print('실행 시간 : ', end - start)
 
-
-# mindslab(5분)
-# 실행 시간 :  0:07:55.874188
-# 1번 파일만 나오고 뒤에는 출력 안됨
-
-# mindslab(2분) 마지막 파일 출력안됨
-# min_silence_len= 100,
-# silence_thresh= dbfs -50,
-# keep_silence= 300,
-# 실행 시간 :  0:02:49.363628
-
-# mindslab2
-# min_silence_len= 200,
-# silence_thresh= dbfs-16,
-# keep_silence= 100
-# for i in range(len(pairs[0])): 여기서 list index out of range 에러남
-# 다시 돌려..^^
-# 길이 !!!!!!!!!!!!!!!!!!!!  :  260
-# 길이 !!!!!!!!!!!!!!!!!!!!  :  259
-# 길이 !!!!!!!!!!!!!!!!!!!!  :  280
-# 이상하게 합쳐진다..
-
-
-# 200,16,100 corpus1
-# 실행 시간 :  0:05:51.726574
-
-# corpus2 500,16,300
+# mindslab
+# 3번 파일 
