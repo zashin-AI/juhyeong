@@ -32,9 +32,11 @@ print(x_test.shape)     # (454, 110336)
 print(y_train.shape)    # (4082)
 print(y_test.shape)     # (454)
 
-# # scaler
-# mms = MinMaxScaler()
-# mms.fit_transform(x_train)
+# scaler
+mms = MinMaxScaler()
+mms.fit(x_train)
+x_train = mms.transform(x_train)
+x_test = mms.transform(x_test)
 
 # 모델 구성 및 훈련
 model = XGBClassifier(verbose = 1)
@@ -72,12 +74,13 @@ for pred_pathAudio in pred_list:
         name = name[0]
         
         y, sr = librosa.load(file, sr = 22050)
-        y_mel = librosa.feature.melspectrogram(
+        mels = librosa.feature.melspectrogram(
             y, sr = sr, n_fft = 512, hop_length = 128, win_length = 512
         )
-        y_mel = librosa.amplitude_to_db(y_mel, ref = np.max)
+        y_mel = librosa.amplitude_to_db(mels, ref = np.max)
         y_mel = y_mel.reshape(1, y_mel.shape[0] * y_mel.shape[1])
         y_pred = model.predict(y_mel)
+        print(y_pred)
 
         if y_pred == '0':
             print(file, '여자입니다')
