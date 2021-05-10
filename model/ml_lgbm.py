@@ -66,11 +66,14 @@ for pred_audioPath in pred_list:
         )
         y_mel = librosa.amplitude_to_db(y_mel, ref = np.max)
         y_mel = y_mel.reshape(1, y_mel.shape[0] * y_mel.shape[1])
+
+        y_mel = mms.transform(y_mel)
+
         y_pred = model.predict(y_mel)
 
         if y_pred == 0:
             print(file, '여자입니다')
-            if name == F'':
+            if name == 'F':
                 count_f += 1
         elif y_pred == 1:
             print(file, '남자입니다')
@@ -79,3 +82,4 @@ for pred_audioPath in pred_list:
 
 print('43개의 여자 목소리 중 ' + str(count_f) + ' 개 정답')
 print('43개의 남자 목소리 중 ' + str(count_m) + ' 개 정답')
+print('time : ', datetime.datetime.now() - str_time)

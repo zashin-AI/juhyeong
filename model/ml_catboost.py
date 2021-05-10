@@ -19,6 +19,8 @@ str_time = datetime.datetime.now()
 x = np.load('c:/nmb/nmb_data/npy/total_data.npy')
 y = np.load('c:/nmb/nmb_data/npy/total_label.npy')
 
+x = x.reshape(-1, x.shape[1] * x.shape[2])
+
 x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size = 0.8, random_state = 23
 )
@@ -61,6 +63,8 @@ for pred in pred_list:
         y_mels = librosa.amplitude_to_db(mels, ref = np.max)
         y_mels = y_mels.reshape(1, y_mels.shape[0] * y_mels.shape[1])
 
+        y_mels = mms.transform(y_mels)
+
         y_pred = model.predict(y_mels)
         print(y_pred)
 
@@ -75,4 +79,5 @@ for pred in pred_list:
 
 print('43개의 목소리 중 여자는 ' + str(count_f) + ' 개 입니다.')
 print('43개의 목소리 중 남자는 ' + str(count_m) + ' 개 입니다.')
+print('time : ', datetime.datetime.now() - str_time)
 

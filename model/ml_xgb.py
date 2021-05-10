@@ -79,6 +79,9 @@ for pred_pathAudio in pred_list:
         )
         y_mel = librosa.amplitude_to_db(mels, ref = np.max)
         y_mel = y_mel.reshape(1, y_mel.shape[0] * y_mel.shape[1])
+
+        y_mel = mms.transform(y_mel)
+
         y_pred = model.predict(y_mel)
 
         if y_pred == 0:
