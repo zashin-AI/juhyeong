@@ -79,15 +79,13 @@ for pred_pathAudio in pred_list:
         )
         y_mel = librosa.amplitude_to_db(mels, ref = np.max)
         y_mel = y_mel.reshape(1, y_mel.shape[0] * y_mel.shape[1])
-        print(y_mel.shape)
         y_pred = model.predict(y_mel)
-        print(y_pred)
 
         if y_pred == 0:
             print(file, '여자입니다')
             if name == 'F':
                 count_f += 1
-        elif y_pred == 1:
+        else:
             print(file, '남자입니다')
             if name == 'M':
                 count_m += 1

@@ -64,11 +64,11 @@ for pred in pred_list:
         y_pred = model.predict(y_mels)
         print(y_pred)
 
-        if y_pred == '0':
+        if y_pred == 0:
             print(file, '여자입니다')
             if name == 'F':
                 count_f += 1
-        elif y_pred == '1':
+        elif y_pred == 1:
             print(file, '남자입니다')
             if name == 'M':
                 count_f += 1
