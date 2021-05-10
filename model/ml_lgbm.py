@@ -9,6 +9,7 @@ warnings.filterwarnings('ignore')
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, log_loss
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from tensorflow.keras.models import load_model
 
@@ -23,8 +24,13 @@ y = np.load('c:/nmb/nmb_data/npy/total_label.npy')
 x = x.reshape(-1, x.shape[1] * x.shape[2])
 
 x_train, x_test, y_train, y_test = train_test_split(
-    x, y, train_size = 0.9, random_state = 23
+    x, y, train_size = 0.8, random_state = 23
 )
+
+mms = MinMaxScaler()
+mms.fit(x_train)
+x_train = mms.transform(x_train)
+x_test = mms.transform(x_test)
 
 # 모델 구성
 model = LGBMClassifier(verbose = 1)
@@ -40,7 +46,7 @@ print('acc : ', acc)
 print('loss : ', loss)
 
 # 모델 예측
-pred_list = ['c:/nmb/nmb_data/predict/F/', 'c:/nmb/nmb_data/predict/M/']
+pred_list = ['c:/nmb/nmb_data/predict/F', 'c:/nmb/nmb_data/predict/M']
 
 count_f = 0
 count_m = 0
@@ -54,7 +60,7 @@ for pred_audioPath in pred_list:
         length = len(name)
         name = name[0]
 
-        y, sr = librosa.load(files, sr = 22050)
+        y, sr = librosa.load(file, sr = 22050)
         y_mel = librosa.feature.melspectrogram(
             y, sr = sr, n_fft = 512, hop_length = 128, win_length = 512
         )

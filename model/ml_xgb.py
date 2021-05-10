@@ -25,7 +25,7 @@ x = x.reshape(-1, x.shape[1]*x.shape[2])
 print(x.shape) # (4536, 110336)
 
 x_train, x_test, y_train, y_test = train_test_split(
-    x, y, train_size = 0.9, random_state = 23
+    x, y, train_size = 0.8, random_state = 23
 )
 print(x_train.shape)    # (4082, 110336)
 print(x_test.shape)     # (454, 110336)
@@ -46,7 +46,7 @@ model.fit(x_train, y_train)
 pickle.dump(
     model,
     open(
-        'c:/data/modelcheckpoint/project_xgb_default.data', 'wb')
+        'c:/data/modelcheckpoint/project_xgb_default(mms).data', 'wb')
     )
 
 # 모델 평가
@@ -60,7 +60,7 @@ print('acc : ', acc_score)
 print('loss : ', log_loss)
 
 # 모델 예측
-pred_list = ['c:/nmb/nmb_data/predict/F/', 'c:/nmb/nmb_data/predict/M/']
+pred_list = ['c:/nmb/nmb_data/predict/F', 'c:/nmb/nmb_data/predict/M']
 
 count_f = 0
 count_m = 0
@@ -79,6 +79,7 @@ for pred_pathAudio in pred_list:
         )
         y_mel = librosa.amplitude_to_db(mels, ref = np.max)
         y_mel = y_mel.reshape(1, y_mel.shape[0] * y_mel.shape[1])
+        print(y_mel.shape)
         y_pred = model.predict(y_mel)
         print(y_pred)
 
