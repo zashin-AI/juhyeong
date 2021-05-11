@@ -47,19 +47,18 @@ for i in scale_list:
     acc = accuracy_score(y_test, y_pred)
     loss = log_loss(y_test, y_pred)
 
-    print('scaler : \n' + str(i) + 'model : XGBClassifier' + 'acc : \n', acc)
+    print('scaler : \n' + str(i) + '\nmodel :\nXGBClassifier' + 'acc : \n', acc)
     print('\nloss : \n', loss)
 
     f = open('c:/nmb/nmb_data/' + str(i) + '_' + 'XGBClassifier' + '.txt', 'w')
     f.write(
-        'scaler : ' + str(i) + '\n' +\
-                'model : XGBClassifier' + '\n' +\
-                    'acc : ' + acc + '\n' +\
-                        'loss : ' + loss + '\n\n')
+        'scaler : ' + str(i) + '\n' + 'model : XGBClassifier' + '\n')
+    f.write('acc : {}'.format(acc))
+    f.write('\nloss : {}'.format(loss) + '\n\n')
 
     for pred in audio_path_list:
         files = librosa.util.find_files(pred, ext = ['wav'])
-        files = np.asarray(file)
+        files = np.asarray(files)
         
         for file in files:
             name = os.path.basename(file)
@@ -75,7 +74,7 @@ for i in scale_list:
 
             y_mels = scale.transform(y_mels)
 
-            y_pred = model.predict(y_pred)
+            y_pred = model.predict(y_mels)
 
             if y_pred == 0:
                 if name == 'F':
