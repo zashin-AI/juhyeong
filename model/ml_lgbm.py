@@ -27,14 +27,23 @@ x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size = 0.8, random_state = 23
 )
 
-mms = MinMaxScaler()
-mms.fit(x_train)
-x_train = mms.transform(x_train)
-x_test = mms.transform(x_test)
+scaler = MinMaxScaler()
+scaler = StandardScaler()
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)
+x_test = scaler.transform(x_test)
 
 # 모델 구성
 model = LGBMClassifier(verbose = 1)
 model.fit(x_train, y_train)
+
+# 가중치 저장
+pickle.dump(
+    model,
+    open(
+        'c:/data/modelcheckpoint/project_lgbm_default(mms).data', 'wb')
+    )
+
 
 # 모델 평가
 y_pred = model.predict(x_test)
@@ -67,7 +76,7 @@ for pred_audioPath in pred_list:
         y_mel = librosa.amplitude_to_db(y_mel, ref = np.max)
         y_mel = y_mel.reshape(1, y_mel.shape[0] * y_mel.shape[1])
 
-        y_mel = mms.transform(y_mel)
+        y_mel = scaler.transform(y_mel)
 
         y_pred = model.predict(y_mel)
 

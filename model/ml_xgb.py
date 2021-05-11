@@ -33,10 +33,11 @@ print(y_train.shape)    # (4082)
 print(y_test.shape)     # (454)
 
 # scaler
-mms = MinMaxScaler()
-mms.fit(x_train)
-x_train = mms.transform(x_train)
-x_test = mms.transform(x_test)
+# scaler = MinMaxScaler()
+scaler = StandardScaler()
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)
+x_test = scaler.transform(x_test)
 
 # 모델 구성 및 훈련
 model = XGBClassifier(verbose = 1)
@@ -46,7 +47,7 @@ model.fit(x_train, y_train)
 pickle.dump(
     model,
     open(
-        'c:/data/modelcheckpoint/project_xgb_default(mms).data', 'wb')
+        'c:/data/modelcheckpoint/project_xgb_default(ss).data', 'wb')
     )
 
 # 모델 평가
@@ -80,16 +81,14 @@ for pred_pathAudio in pred_list:
         y_mel = librosa.amplitude_to_db(mels, ref = np.max)
         y_mel = y_mel.reshape(1, y_mel.shape[0] * y_mel.shape[1])
 
-        y_mel = mms.transform(y_mel)
+        y_mel = scaler.transform(y_mel)
 
         y_pred = model.predict(y_mel)
 
         if y_pred == 0:
-            print(file, '여자입니다')
             if name == 'F':
                 count_f += 1
         else:
-            print(file, '남자입니다')
             if name == 'M':
                 count_m += 1
 

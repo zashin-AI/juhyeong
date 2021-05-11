@@ -4,6 +4,7 @@ import os
 import numpy as np
 import noisereduce as nr
 
+# 기존 저장 시 data 에서 reduce_noise 로 바꿔서 재업로드함. 2021-05-11
 
 def denoise_tim(
     load_dir,
@@ -56,6 +57,15 @@ def denoise_tim(
                     n_fft=n_fft,
                     hop_length=hop_length,
                     win_length=win_length)
-
-                sf.write(out_dir + ext_dir + filename[:-4] + '_denoise.wav', data, sr) # 노이즈 제거 한 파일 생성
+                sf.write(out_dir + ext_dir + filename[:-4] + '_denoise.wav', reduce_noise, sr) # 노이즈 제거 한 파일 생성
                 print("%s/%s" % (path, filename) + ' done') # 완료 된 경우에 출력
+
+denoise_tim(
+    load_dir = 'c:/nmb/nmb_data/audio_data/',
+    out_dir = 'c:/nmb/nmb_data/audio_data_denoise/',
+    noise_min = 5000,
+    noise_max = 15000,
+    n_fft = 512,
+    hop_length = 128,
+    win_length = 512
+)
