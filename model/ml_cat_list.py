@@ -38,7 +38,7 @@ for i in scale_list:
     x_test = scale.transform(x_test)
 
     # for j in model_list:
-    model = XGBClassifier(verbose = 1)
+    model = CatBoostClassifier(verbose = 1)
     model.fit(x_train, y_train)
 
     y_pred = model.predict(x_test)
@@ -46,13 +46,13 @@ for i in scale_list:
     acc = accuracy_score(y_test, y_pred)
     loss = log_loss(y_test, y_pred)
 
-    print('scaler : \n' + str(i) + 'model : XGBClassifier' + 'acc : \n', acc)
+    print('scaler : \n' + str(i) + 'model : CatBoostClassifier' + 'acc : \n', acc)
     print('\nloss : \n', loss)
 
-    f = open('c:/nmb/nmb_data/' + str(i) + '_' + 'XGBClassifier' + '.txt', 'w')
+    f = open('c:/nmb/nmb_data/' + str(i) + '_' + 'CatBoostClassifier' + '.txt', 'w')
     f.write(
         'scaler : ' + str(i) + '\n' +\
-                'model : XGBClassifier' + '\n' +\
+                'model : CatBoostClassifier' + '\n' +\
                     'acc : ' + acc + '\n' +\
                         'loss : ' + loss + '\n\n')
 

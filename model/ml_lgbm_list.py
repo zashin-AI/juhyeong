@@ -37,6 +37,7 @@ for i in scale_list:
     x_train = scale.transform(x_train)
     x_test = scale.transform(x_test)
 
+    # for j in model_list:
     model = LGBMClassifier(verbose = 1)
     model.fit(x_train, y_train)
 
