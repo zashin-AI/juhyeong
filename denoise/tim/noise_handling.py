@@ -57,11 +57,6 @@ def denoise_tim(
                     n_fft=n_fft,
                     hop_length=hop_length,
                     win_length=win_length)
-
-<<<<<<< HEAD
                 sf.write(out_dir + ext_dir + filename[:-4] + '_denoise.wav', reduce_noise, sr) # 노이즈 제거 한 파일 생성
                 print("%s/%s" % (path, filename) + ' done') # 완료 된 경우에 출력
-=======
-                sf.write(out_dir + ext_dir + filename[:-4] + '_denoise.wav', data, sr) # 노이즈 제거 한 파일 생성
-                print("%s/%s" % (path, filename) + ' done') # 완료 된 경우에 출력
->>>>>>> de83188490b90c57645dd129062e0470e27d3f63
+
