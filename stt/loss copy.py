@@ -7,11 +7,14 @@ def custom_acc_function(txt_list):
     test_length = txt_list[1]                                   # 라벨 문자열 변수 저장
     
     def remove_string(txt):
-        text = re.sub('[~.\'\",![\](\)<\>\/?]', '', txt)
+        text = re.sub('[~.\'\",![\](\)<\>\/?\n\t ]', '', txt)
         return text
 
     label_length = remove_string(label_length)
     test_length = remove_string(test_length)
+
+    if test_length[0] == ' ':
+        test_length = test_length[1:]
 
     if len(label_length) == len(test_length):                   # 라벨과 STT 의 길이 비교 (서로 같은 경우)
         for j in range(len(label_length)):                      # 라벨 문자열의 길이 기준으로 문자 매치
@@ -71,6 +74,11 @@ if __name__ == '__main__':
 
     print('c, d : ')
     custom_acc_function([c, d])
+
+    e = 'abcdef'
+    f = ' abcde'
+
+    custom_acc_function([e, f])
 
 
     # e = '[오늘은 의심스러웠지만~, 그만 문을 열어 주고 말았어요]'
