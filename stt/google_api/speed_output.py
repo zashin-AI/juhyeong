@@ -6,7 +6,6 @@ import numpy as np
 from hanspell import spell_checker
 from pydub import AudioSegment
 from librosa.core import audio
-from numpy import lib
 
 import sys
 sys.path.append('c:/nmb/nada/stt/')
