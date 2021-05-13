@@ -32,7 +32,7 @@ model = CalibratedClassifierCV()
 model.fit(x_train, y_train)
 
 pickle.dump(
-    model, open('c:/data/modelcheckpoint/project_cali_default(mms).data', 'wb')
+    model, open('c:/data/modelcheckpoint/project_cali_default(ss).data', 'wb')
 )
 
 y_pred = model.predict(x_test)
@@ -67,16 +67,13 @@ for pred in pred_list:
         y_mels = scaler.transform(y_mels)
 
         y_pred = model.predict(y_mels)
-        print(y_pred)
 
         if y_pred == 0:
-            print(file, '여자입니다')
             if name == 'F':
                 count_f += 1
         elif y_pred == 1:
-            print(file, '남자입니다')
             if name == 'M':
-                count_f += 1
+                count_m += 1
 
 print('43개의 목소리 중 여자는 ' + str(count_f) + ' 개 입니다.')
 print('43개의 목소리 중 남자는 ' + str(count_m) + ' 개 입니다.')

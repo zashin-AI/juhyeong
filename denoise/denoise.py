@@ -13,3 +13,6 @@ denoise_tim(
     hop_length = 128,
     win_length = 512
 )
+
+import noisereduce as nr
+

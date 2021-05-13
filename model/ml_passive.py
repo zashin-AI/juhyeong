@@ -29,12 +29,12 @@ x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
 
 model = PassiveAggressiveClassifier(
-    C = 10
+    C = 100
 )
 model.fit(x_train, y_train)
 
 pickle.dump(
-    model, open('c:/data/modelcheckpoint/project_passive_ss_C_10.data', 'wb')
+    model, open('c:/data/modelcheckpoint/project_passive_ss_C_100.data', 'wb')
 )
 
 y_pred = model.predict(x_test)
