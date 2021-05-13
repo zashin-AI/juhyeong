@@ -27,7 +27,7 @@ x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size = 0.8, random_state = 23
 )
 
-scaler = MinMaxScaler()
+# scaler = MinMaxScaler()
 scaler = StandardScaler()
 scaler.fit(x_train)
 x_train = scaler.transform(x_train)
@@ -41,7 +41,7 @@ model.fit(x_train, y_train)
 pickle.dump(
     model,
     open(
-        'c:/data/modelcheckpoint/project_lgbm_default(mms).data', 'wb')
+        'c:/data/modelcheckpoint/project_lgbm_default(ss).data', 'wb')
     )
 
 
@@ -81,11 +81,9 @@ for pred_audioPath in pred_list:
         y_pred = model.predict(y_mel)
 
         if y_pred == 0:
-            print(file, '여자입니다')
             if name == 'F':
                 count_f += 1
         elif y_pred == 1:
-            print(file, '남자입니다')
             if name == 'M':
                 count_m += 1
 
