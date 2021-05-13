@@ -23,12 +23,20 @@ def custom_acc_function(txt_list):
     print(test_length)
 
     acc = 0
+    count = 0
 
     for i in test_length:
         if i in label_length:
             for j in range(len(label_length)):
                 if label_length[j] == test_length[j]:
-                    acc += 1
+                    acc += 1 * len(label_length[j])
+                    print('o')
+                else:
+                    acc += 0
+                    print('x')
+        else:
+            print('g')
+                    
 
     print(f'{len(label_length)} 글자 중 맞춘 글자의 갯수 : {acc}')
     print(f'정답률 : {np.sum(acc)/len(label_length) * 100:.3f} %')

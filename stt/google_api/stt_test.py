@@ -12,12 +12,6 @@ from loss import custom_acc_function
 label_txt = open('c:/nmb/nmb_data/korea_multi_t12.txt', 'r', encoding='UTF-8')
 label = label_txt.read()
 
-# txt = open('c:/nmb/nmb_data/korea_multi_original.txt', 'w', encoding='UTF-8')
-# txt = open('c:/nmb/nmb_data/korea_multi_speed_down.txt', 'w', encoding='UTF-8')
-# txt = open('c:/nmb/nmb_data/korea_multi_spped_up.txt', 'w', encoding='UTF-8')
-# txt = open('c:/nmb/nmb_data/korea_multi_up.txt', 'w', encoding='UTF-8')
-# txt = open('c:/nmb/nmb_data/korea_multi_down.txt', 'w', encoding='UTF-8')
-
 r = sr.Recognizer()
 
 # audio = sr.AudioFile(
