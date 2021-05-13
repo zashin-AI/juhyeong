@@ -22,17 +22,11 @@ x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size=0.8, random_state=23
 )
 
-# scaler = MinMaxScaler()
-scaler = StandardScaler()
-scaler.fit(x_train)
-x_train = scaler.transform(x_train)
-x_test= scaler.transform(x_test)
-
 model = CalibratedClassifierCV()
 model.fit(x_train, y_train)
 
 pickle.dump(
-    model, open('c:/data/modelcheckpoint/project_cali_default(mms).data', 'wb')
+    model, open('c:/data/modelcheckpoint/project_cali_default.data', 'wb')
 )
 
 y_pred = model.predict(x_test)
@@ -64,7 +58,7 @@ for pred in pred_list:
         y_mels = librosa.amplitude_to_db(mels, ref = np.max)
         y_mels = y_mels.reshape(1, y_mels.shape[0] * y_mels.shape[1])
 
-        y_mels = scaler.transform(y_mels)
+        # y_mels = scaler.transform(y_mels)
 
         y_pred = model.predict(y_mels)
         print(y_pred)
@@ -76,7 +70,7 @@ for pred in pred_list:
         elif y_pred == 1:
             print(file, '남자입니다')
             if name == 'M':
-                count_f += 1
+                count_m += 1
 
 print('43개의 목소리 중 여자는 ' + str(count_f) + ' 개 입니다.')
 print('43개의 목소리 중 남자는 ' + str(count_m) + ' 개 입니다.')
