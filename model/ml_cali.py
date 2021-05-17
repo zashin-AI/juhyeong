@@ -26,11 +26,7 @@ model = CalibratedClassifierCV()
 model.fit(x_train, y_train)
 
 pickle.dump(
-<<<<<<< HEAD
     model, open('c:/data/modelcheckpoint/project_cali_default(ss).data', 'wb')
-=======
-    model, open('c:/data/modelcheckpoint/project_cali_default.data', 'wb')
->>>>>>> f4f8d144ad5c53dda2c239d52eb2335f7b408ecd
 )
 
 y_pred = model.predict(x_test)

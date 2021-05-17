@@ -29,17 +29,25 @@ def custom_acc_function(txt_list):
         if i in label_length:
             for j in range(len(label_length)):
                 if label_length[j] == test_length[j]:
-                    acc += 1 * len(label_length[j])
+                    acc += len(label_length[j])
                     print('o')
                 else:
                     acc += 0
                     print('x')
         else:
-            print('g')
+            test_length = list(test_length)
+            label_length = list(label_length)
+            if test_length[count] in label_length[count]:
+                acc += len(label_length[count])
+            else:
+                acc += 0
+                print('g')
                     
 
     print(f'{len(label_length)} 글자 중 맞춘 글자의 갯수 : {acc}')
     print(f'정답률 : {np.sum(acc)/len(label_length) * 100:.3f} %')
+
+    acc = np.sum(acc)/len(label_length)
     return acc
 
 
@@ -59,8 +67,7 @@ if __name__ == '__main__':
     c = '밥을 먹었어요 '
     d = '밥을 아 먹었어'
 
-    print('c, d : ')
-    custom_acc_function([c, d])
+    print(f'c, d : {custom_acc_function([c,d])}')
 
     # e = '오나라 오나라 아주 오나'
     # f = '오라 오라 오라'

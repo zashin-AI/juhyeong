@@ -12,6 +12,8 @@ def custom_acc_function(txt_list):
 
     label_length = remove_string(label_length)
     test_length = remove_string(test_length)
+    print(f'len(label_length) : {len(label_length)}')
+    print(f'len(test_length) : {len(test_length)}')
 
     if test_length[0] == ' ':
         test_length = test_length[1:]
@@ -21,8 +23,13 @@ def custom_acc_function(txt_list):
             try:
                 if label_length[j] == test_length[j]:           # 라벨과 STT 문자열의 j 번째끼리 비교
                     acc += 1                                    # 일치하는 경우 acc 값에 1 을 추가한다
+                    # print(test_length[j])
                 else:
                     acc += 0                                    # 서로 다른 경우 acc 변동 없음
+                    for i in range(5):
+                        if test_length[j:j+i] in label_length[j:j+i]:
+                            test_length[i] = label_length[i]
+                            return custom_acc_function([label_length, test_length])                    
             except:
                 pass
     elif len(label_length) > len(test_length):
@@ -30,6 +37,7 @@ def custom_acc_function(txt_list):
             try:
                 if label_length[j] == test_length[j]:
                     acc += 1
+                    # print(test_length[j])
                 else:
                     acc += 0
                     test_length = test_length[:j] + '○' + test_length[j:]
@@ -43,15 +51,18 @@ def custom_acc_function(txt_list):
             try:
                 if label_length[j] == test_length[j]:
                     acc += 1
+                    # print(test_length[j])
                 else:
                     acc += 0
-                    label_length = label_length[:j] + '○' + label_length[j:]
+                    label_length = label_length[:j] + '●' + label_length[j:]
                     if len(label_length) == len(test_length):
                         return custom_acc_function([label_length, test_length])
             except:
                 pass
     acc = [np.sum(acc), np.sum(acc)/len(label_length)]
-
+    
+    print(label_length)
+    print(test_length)
     print(f'{len(label_length)} 글자 중 맞춘 글자의 갯수 : {acc[0]}')
     print(f'정답률 : {acc[1] * 100:.3f} %')
     return acc
@@ -67,18 +78,20 @@ if __name__ == '__main__':
     b = test.read()
     h = answer.read()
 
-    print('stt : ', custom_acc_function([a, b]))
+    # print('stt : ', custom_acc_function([a, b]))
+    print(len(a))
+    print(len(b))
 
     c = 'abcdfgh'
     d = 'abdefgh'
 
-    print('c, d : ')
-    custom_acc_function([c, d])
+    # print('c, d : ')
+    # custom_acc_function([c, d])
 
     e = 'abcdef'
     f = ' abcde'
 
-    custom_acc_function([e, f])
+    # custom_acc_function([e, f])
 
 
     # e = '[오늘은 의심스러웠지만~, 그만 문을 열어 주고 말았어요]'
@@ -86,3 +99,16 @@ if __name__ == '__main__':
 
     # custom_acc_function([e, f])
     # custom_acc_function([f, e])
+
+    g = '밥을 먹었어요'
+    h = '밥을 아먹었어요'
+
+    # custom_acc_function([g, h])
+
+    # print((len(a)/249)*100)
+
+    aa = 'aaa'
+    bb = 'bbb'
+    aa = bb[0] + aa[1:]
+
+    print(aa)
