@@ -8,7 +8,7 @@ def home():
 
 @app.route('/send')
 def send():
-    return render_template('/UI.html', data = str(123))
+    return render_template('/UI.html', data = 'c:/nmb/nada/answer.txt')
 
 if __name__ == '__main__':
     app.run()
