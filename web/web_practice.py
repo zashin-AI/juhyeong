@@ -42,6 +42,11 @@ def make_predict():
             pp, as_attachment = True, mimetype='text/txt'
         )
 
+@app.route('/read')
+def read_text():
+    f = open('C:/Users/ai/Downloads/test.txt', 'r')#, encoding='utf-8')
+    return "</br>".join(f.readlines())    
+
 
 if __name__ == '__main__':
     model = joblib.load('c:/data/modelcheckpoint/project_xgb_default.data')
