@@ -1,10 +1,12 @@
 from flask import Flask, request, render_template, send_file
 from scipy import misc
+from tensorflow.keras.models import load_model
 
 import joblib
 import numpy as np
 import librosa
 import speech_recognition as sr
+
 
 
 app = Flask(__name__)
@@ -22,12 +24,14 @@ def make_predict():
         y, sr = librosa.load(f)
         y_mel = librosa.feature.melspectrogram(
             y, sr = sr,
-            n_fft = 512, hop_length=128
+            n_fft = 512, hop_length=128, win_length=512
         )
         y_mel = librosa.amplitude_to_db(y_mel, ref = np.max)
-        y_mel = y_mel.reshape(1, y_mel.shape[0] * y_mel.shape[1])
+        y_mel = y_mel.reshape(1, y_mel.shape[0], y_mel.shape[1])
 
         prediction = model.predict(y_mel)
+        prediction = np.argmax(prediction)
+        
         if prediction == 0:
             with open('c:/nmb/nmb_data/web/test.txt', 'w') as p:
                 p.write('여자다 이 자식아')
@@ -49,5 +53,5 @@ def read_text():
 
 
 if __name__ == '__main__':
-    model = joblib.load('c:/data/modelcheckpoint/project_xgb_default.data')
+    model = load_model('c:/data/modelcheckpoint/mobilenet_rmsprop_1.h5')
     app.run(debug=True)
