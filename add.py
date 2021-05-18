@@ -10,3 +10,8 @@ out = tf.keras.layers.Dense(4)(added)
 model = tf.keras.models.Model(inputs=[input1, input2], outputs=out)
 
 model.summary()
+
+a = 234.
+
+print(type(a))
+print(type(str(a)))

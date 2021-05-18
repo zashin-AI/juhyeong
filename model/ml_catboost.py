@@ -26,20 +26,23 @@ x_train, x_test, y_train, y_test = train_test_split(
 )
 
 # scaler = MinMaxScaler()
-# scaler = StandardScaler()
-# scaler.fit(x_train)
-# x_train = scaler.transform(x_train)
-# x_test = scaler.transform(x_test)
+scaler = StandardScaler()
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)
+x_test = scaler.transform(x_test)
 
 # model
-model = CatBoostClassifier()
+model = CatBoostClassifier(
+    # learning_rate=0.01,
+    iterations=1000
+)
 model.fit(x_train, y_train)
 
 # 가중치 저장
 pickle.dump(
     model,
     open(
-        'c:/data/modelcheckpoint/project_catboost_default.data', 'wb')
+        'c:/data/modelcheckpoint/project_catboost__iter_1000_ss.data', 'wb')
     )
 
 y_pred = model.predict(x_test)
@@ -71,7 +74,7 @@ for pred in pred_list:
         y_mels = librosa.amplitude_to_db(mels, ref = np.max)
         y_mels = y_mels.reshape(1, y_mels.shape[0] * y_mels.shape[1])
 
-        # y_mels = scaler.transform(y_mels)
+        y_mels = scaler.transform(y_mels)
 
         y_pred = model.predict(y_mels)
 
@@ -86,3 +89,9 @@ print('43개의 목소리 중 여자는 ' + str(count_f) + ' 개 입니다.')
 print('43개의 목소리 중 남자는 ' + str(count_m) + ' 개 입니다.')
 print('time : ', datetime.datetime.now() - str_time)
 
+# lr = 0.017861
+# acc :  0.920704845814978
+# loss :  2.7387848986276495
+# 43개의 목소리 중 여자는 38 개 입니다.
+# 43개의 목소리 중 남자는 39 개 입니다.
+# time :  1:16:38.881588
