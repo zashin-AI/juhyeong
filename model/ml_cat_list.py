@@ -38,7 +38,7 @@ for i in scale_list:
     x_test = scale.transform(x_test)
 
     # for j in model_list:
-    model = CatBoostClassifier(verbose = 1)
+    model = CatBoostClassifier(learning_rate = 0.001)
     model.fit(x_train, y_train)
 
     y_pred = model.predict(x_test)
