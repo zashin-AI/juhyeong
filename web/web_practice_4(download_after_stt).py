@@ -153,7 +153,7 @@ def download_file():
         pp,
         as_attachment=True,
         mimetype='text/txt',
-        cache_timeout=0
+        cache_timeout=0 # 지정한 파일이 아니라 과거의 파일이 계속 다운 받는 경우, 캐시메모리의 타임아웃을 0 으로 지정해주면 된다
     )
 
 # 추론 된 파일 읽기
