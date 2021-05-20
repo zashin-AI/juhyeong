@@ -7,16 +7,12 @@ from flask import Flask, request, render_template, send_file
 from tensorflow.keras.models import load_model
 from pydub import AudioSegment, effects
 from pydub.silence import split_on_silence
-
 import numpy as np
 import librosa
 import speech_recognition as sr
 import tensorflow as tf
 import os
 import copy
-
-# import sys
-# sys.path.append('c:/nmb/nada/python_import/')
 
 # gpu failed init~~ 에 관한 에러 해결
 gpus = tf.config.experimental.list_physical_devices('GPU')
