@@ -156,12 +156,6 @@ for i, chunk in enumerate(audio_chunks):
             speaker = _predict_speaker(y, sampling_rate)
             speaker_stt.append(str(speaker))
             print(speaker_stt[1], " : " , speaker_stt[0])
-            if speaker == '여자':
-                female_list.append(str(speaker))
-                print('1')
-            else:
-                male_list.append(str(speaker))
-                print('2')
 
         else :  # 5초 미만인 파일을 5초 이상으로 만든 후, 5초로 잘라서 model.predict에 넣는다.
             audio_copy = AudioSegment.from_wav(out_file)
@@ -174,12 +168,6 @@ for i, chunk in enumerate(audio_chunks):
             speaker = _predict_speaker(y_copy, sampling_rate)
             speaker_stt.append(str(speaker))    # 화자 구분을 못했다는 걸 공백으로 저장
             print(speaker_stt[1], " : " , speaker_stt[0])
-            if speaker == '여자':
-                female_list.append(str(speaker))
-                print('3')
-            else:
-                male_list.append(str(speaker))
-                print('4')
         
         # txt 파일로 저장하기
         save_script += speaker_stt[1] +': ' + speaker_stt[0] + '\n\n'
@@ -187,12 +175,15 @@ for i, chunk in enumerate(audio_chunks):
         save_male += male_list[1] + " : " + male_list[0] + '\n\n'
 
         with open(folder_path + "\\stt_script_5s2.txt", 'wt') as f: f.writelines(save_script) 
-        with open('c:/nmb/nada/web/static/test_female.txt', 'wt', encoding='utf-8') as p: p.writelines(save_female)
-        with open('c:/nmb/nada/web/static/test_male.txt', 'wt', encoding='utf-8') as v: v.writelines(save_male)      
+        with open('c:/nmb/nada/web/static/test_female.txt', 'wt') as p: p.writelines(save_female)
+        with open('c:/nmb/nada/web/static/test_male.txt', 'wt') as v: v.writelines(save_male)      
 
         print(speaker_stt)
         print(female_list)
         print(male_list)  
+        print(save_script)
+        print(save_female)
+        print(save_male)
 
     except : 
         # 너무 짧은 음성은 STT & 화자구분 pass 

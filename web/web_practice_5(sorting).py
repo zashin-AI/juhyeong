@@ -105,6 +105,7 @@ def download():
             try:
                 stt_text = STT(aaa)
                 speaker_stt.append(str(stt_text))
+                
 
                 y, sample_rate = librosa.load(out_file, sr = 22050)
 
@@ -113,10 +114,13 @@ def download():
                     speaker = predict_speaker(y, sample_rate)
                     speaker_stt.append(str(speaker))
                     print(speaker_stt[1], " : ", speaker_stt[0])
-                    if speaker_stt[1] == '여자':
-                        female_list.append(str(speaker))
+                    if speaker == '여자':
+                        print(speaker_stt)
+                        female_list.append(str(speaker_stt[0]))
                     else:
-                        male_list.append(str(speaker))
+                        male_list.append(str(speaker_stt[0]))
+                        print(speaker_stt)
+
 
                 else:
                     audio_copy = AudioSegment.from_wav(out_file)
@@ -129,10 +133,12 @@ def download():
                     speaker = predict_speaker(y_copy, sample_rate)
                     speaker_stt.append(str(speaker))
                     print(speaker_stt[1] + " : " + speaker_stt[0])
-                    if speaker_stt[1] == '여자':
-                        female_list.append(str(speaker))
+                    if speaker == '여자':
+                        print(speaker_stt)
+                        female_list.append(str(speaker_stt[0]))
                     else:
-                        male_list.append(str(speaker))
+                        print(speaker_stt)
+                        male_list.append(str(speaker_stt[0]))
 
                 save_script += speaker_stt[1] + " : " + speaker_stt[0] + '\n\n'
                 save_female += female_list[1] + " : " + female_list[0] + '\n\n'
@@ -141,6 +147,13 @@ def download():
                 with open('c:/nmb/nada/web/static/test.txt', 'wt', encoding='utf-8') as f: f.writelines(save_script)
                 with open('c:/nmb/nada/web/static/test_female.txt', 'wt', encoding='utf-8') as f: f.writelines(save_female)
                 with open('c:/nmb/nada/web/static/test_male.txt', 'wt', encoding='utf-8') as f: f.writelines(save_male)
+                
+                print(type(save_script))
+                print(save_script)
+                print(type(save_female))
+                print(save_female)
+                print(type(save_male))
+                print(save_male)
 
             except:
                 pass
@@ -161,10 +174,22 @@ def download_file():
 # 추론 된 파일 읽기
 @app.route('/read')
 def read_text():
-    f = open('C:/nmb/nada/web/static/test.txt', 'r', encoding='utf-8')
-    "</br>".join(f.readlines())
     return render_template('/read.html')
 
+@app.route('/readAll')
+def read_all():
+    f = open('C:/nmb/nada/web/static/test.txt', 'r', encoding='utf-8')
+    return "</br>".join(f.readlines())
+
+@app.route('/readFemale')
+def read_female():
+    f = open('c:/nmb/nada/web/static/test_female.txt', 'r', encoding='utf-8')
+    return "</br>".join(f.readlines())
+
+@app.route('/readMale')
+def read_male():
+    f = open('c:nmb/nada/web/static/test_male.txt', 'r', encoding='utf-8')
+    return "</br>".join(f.readlines())
 
 if __name__ == '__main__':
     model = load_model('c:/data/modelcheckpoint/mobilenet_rmsprop_1.h5')

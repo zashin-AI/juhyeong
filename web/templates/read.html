@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>Read Page</title>
+    </head>
+    <body>
+        <form>
+            <select>
+                <option value = "all">All
+                    <a herf = "url_for{{('read_all')}}" method = "POST"></a>
+                </option>
+                <option value = "female">Female
+                    <a herf = "url_for{{('read_female')}}" method = "POST"></a>
+                </option>
+                <option value = "male">Male
+                    <a herf = "url_for{{('read_male')}}" method = "POST"></a>
+                </option>
+            </select>
+            <input type = "submit" name = "name" value = "선택">
+        </form>
+    </body>
+</html>
