@@ -1,0 +1,15 @@
+<html>
+    <body>
+        <form action = 'https://localhost:5000/readAll', method = ['POST']>
+            <select>
+                <option value = "{{url_for('read_all')}}">All</option>
+            </select>
+        </form>
+        <form action = 'https://localhost:5000/readFemale', method = ['POST']>
+            <select>
+                <option value = "{{url_for('read_female')}}">Female</option>
+            </select>
+        </form>
+    </body>
+
+</html>

@@ -130,11 +130,14 @@ save_script = ''
 save_female = ''
 save_male = ''
 
+
+female_list = list()
+male_list = list()
+
 # STT -> 화자구분
 for i, chunk in enumerate(audio_chunks): 
+    
     speaker_stt = []   
-    female_list = list()
-    male_list = list()
     out_file = folder_path + "\\"+ str(i) + "_chunk.wav"    # wav 파일 생성 안하고 STT로 바꿀 수 있는 방법은 없을까//?
     chunk.export(out_file, format="wav")
     aaa = sr.AudioFile(out_file)
@@ -142,11 +145,15 @@ for i, chunk in enumerate(audio_chunks):
         audio = r.record(aaa)
 
     try : 
+
+        f = open(folder_path + "\\stt_script_5s.txt", 'w')
+        p = open(folder_path + '//stt_script_5s_female.txt', 'w')
+        v = open(folder_path + '//stt_script_5s_male.txt', 'w')
         # [1] STT & 맞춤법 확인
         spell_checked_text = _STT_checked_hanspell(audio)
         speaker_stt.append(str(spell_checked_text))     # 화자와 텍스트를 한 리스트로 합칠 것임
-        female_list.append(str(spell_checked_text))
-        male_list.append(str(spell_checked_text))
+        # female_list.append(str(spell_checked_text))
+        # male_list.append(str(spell_checked_text))
 
         # [2] 화자구분
         y, sampling_rate = librosa.load(out_file, sr=22050)
@@ -156,7 +163,13 @@ for i, chunk in enumerate(audio_chunks):
             speaker = _predict_speaker(y, sampling_rate)
             speaker_stt.append(str(speaker))
             print(speaker_stt[1], " : " , speaker_stt[0])
-
+            if speaker == '여자':
+                female_list.append(str(speaker_stt[0]))
+                print('1')
+            elif speaker == '남자':
+                male_list.append(str(speaker_stt[0]))
+                print('2')
+                
         else :  # 5초 미만인 파일을 5초 이상으로 만든 후, 5초로 잘라서 model.predict에 넣는다.
             audio_copy = AudioSegment.from_wav(out_file)
             audio_copy = copy.deepcopy(audio_copy)
@@ -168,26 +181,36 @@ for i, chunk in enumerate(audio_chunks):
             speaker = _predict_speaker(y_copy, sampling_rate)
             speaker_stt.append(str(speaker))    # 화자 구분을 못했다는 걸 공백으로 저장
             print(speaker_stt[1], " : " , speaker_stt[0])
+            if speaker == '여자':
+                female_list.append(str(speaker_stt[0]))
+                print('3')
+            elif speaker == '남자':
+                male_list.append(str(speaker_stt[0]))
+                print('4')
         
         # txt 파일로 저장하기
-        save_script += speaker_stt[1] +': ' + speaker_stt[0] + '\n\n'
-        save_female += female_list[1] + " : " + female_list[0] + '\n\n'
-        save_male += male_list[1] + " : " + male_list[0] + '\n\n'
+        save_script += speaker_stt[1] +' : ' + speaker_stt[0] + '\n\n'
 
-        with open(folder_path + "\\stt_script_5s2.txt", 'wt') as f: f.writelines(save_script) 
-        with open('c:/nmb/nada/web/static/test_female.txt', 'wt') as p: p.writelines(save_female)
-        with open('c:/nmb/nada/web/static/test_male.txt', 'wt') as v: v.writelines(save_male)      
+        f.writelines(save_script)
+        # p.writelines(str(female_list))
+        # v.writelines(str(male_list))
+        p.writelines('\n\n'.join(female_list))
+        v.writelines('\n\n'.join(male_list))
+        
+        # with open(folder_path + "\\stt_script_5s2.txt", 'wt') as f: f.writelines(save_script) 
+        # with open('c:/nmb/nada/web/static/test_female.txt', 'wt') as p: p.writelines(save_female)
+        # with open('c:/nmb/nada/web/static/test_male.txt', 'wt') as v: v.writelines(save_male)      
 
-        print(speaker_stt)
-        print(female_list)
-        print(male_list)  
-        print(save_script)
-        print(save_female)
-        print(save_male)
+        print('ml : ',male_list)
+        print('fl : ', female_list)
 
     except : 
         # 너무 짧은 음성은 STT & 화자구분 pass 
         pass   
+
+f.close()
+p.close()
+v.close()
 
 end = datetime.now()
 time = end - start
