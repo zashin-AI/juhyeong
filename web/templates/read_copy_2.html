@@ -1,0 +1,14 @@
+<html>
+    <head>
+        <title>Read Page</title>
+    </head>
+    <body>
+        <form>
+            <select onchange = "if(this.value) location.href(this.value)" ,name = "select_read_file">
+                <option value = "https://localhost:5000/readAll">All</option>
+                <option value = "https://localhost:5000/readFemale">Female</option>
+                <option value = "https://localhost:5000/readMale">Male</option>
+            </select>
+        </form>
+    </body>
+</html>

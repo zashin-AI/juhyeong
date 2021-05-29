@@ -4,15 +4,15 @@
     </head>
     <body>
         <form>
-            <select>
-                <option value = "all">All
-                    <a herf = "url_for{{('read_all')}}" method = "POST"></a>
+            <select name = "select_read_file">
+                <option value = "all", selected>All
+                    <a href = "url_for{{('read_all')}}" method = "GET"></a>
                 </option>
                 <option value = "female">Female
-                    <a herf = "url_for{{('read_female')}}" method = "POST"></a>
+                    <a href = "url_for{{('read_female')}}" method = "GET"></a>
                 </option>
                 <option value = "male">Male
-                    <a herf = "url_for{{('read_male')}}" method = "POST"></a>
+                    <a href = "url_for{{('read_male')}}" method = "GET"></a>
                 </option>
             </select>
             <input type = "submit" name = "name" value = "선택">

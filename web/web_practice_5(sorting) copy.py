@@ -113,10 +113,10 @@ def download():
                     y = y[:22050*5]
                     speaker = predict_speaker(y, sample_rate)
                     speaker_stt.append(str(speaker))
-                    # print(speaker_stt[1], " : ", speaker_stt[0])
+                    print(speaker_stt[1], " : ", speaker_stt[0])
                     if speaker == '여자':
-                        female_list.append(str(speaker_stt[0]))
                         print(speaker_stt)
+                        female_list.append(str(speaker_stt[0]))
                     else:
                         male_list.append(str(speaker_stt[0]))
                         print(speaker_stt)
@@ -132,21 +132,20 @@ def download():
                     y_copy = y_copy[:22050*5]
                     speaker = predict_speaker(y_copy, sample_rate)
                     speaker_stt.append(str(speaker))
-                    # print(speaker_stt[1] + " : " + speaker_stt[0])
+                    print(speaker_stt[1] + " : " + speaker_stt[0])
                     if speaker == '여자':
+                        print(speaker_stt)
                         female_list.append(str(speaker_stt[0]))
-                        print(speaker_stt)
                     else:
-                        male_list.append(str(speaker_stt[0]))
                         print(speaker_stt)
+                        male_list.append(str(speaker_stt[0]))
 
                 print('done!')
-
                 save_script += speaker_stt[1] + " : " + speaker_stt[0] + '\n\n'
                 save_female += female_list[1] + " : " + female_list[0] + '\n\n'
                 save_male += male_list[1] + " : " + male_list[1] + '\n\n'
-
                 print('done!')
+
 
                 f = open('c:/nmb/nada/web/static/test.txt', 'wt', encoding='utf-8')
                 f.writelines(save_script)
@@ -186,22 +185,7 @@ def download_file():
 # 추론 된 파일 읽기
 @app.route('/read')
 def read_text():
-    return render_template('/read_copy_2.html')
-
-@app.route('/readAll')
-def read_all():
-    f = open('C:/nmb/nada/web/static/test.txt', 'r', encoding='utf-8')
-    return "</br>".join(f.readlines())
-
-@app.route('/readFemale')
-def read_female():
-    f = open('c:/nmb/nada/web/static/test_female.txt', 'r', encoding='utf-8')
-    return "</br>".join(f.readlines())
-
-@app.route('/readMale')
-def read_male():
-    f = open('c:nmb/nada/web/static/test_male.txt', 'r', encoding='utf-8')
-    return "</br>".join(f.readlines())
+    return render_template('/read.html')
 
 if __name__ == '__main__':
     model = load_model('c:/data/modelcheckpoint/mobilenet_rmsprop_1.h5')
