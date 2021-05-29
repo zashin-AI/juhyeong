@@ -84,15 +84,11 @@ def download():
         f_path = os.path.split(f_path[0])
 
         folder_path = 'c:/nmb/nmb_data/web/chunk/'
-        f_name = f_path[1] 
 
         normalizedsound = normalized_sound(f)
         audio_chunks = split_slience(normalizedsound)
-        len_audio_chunks = len(audio_chunks)
 
         save_script = ''
-        save_female = ''
-        save_male = ''
 
         female_list = list()
         male_list = list()
@@ -117,13 +113,11 @@ def download():
                     y = y[:22050*5]
                     speaker = predict_speaker(y, sample_rate)
                     speaker_stt.append(str(speaker))
-                    # print(speaker_stt[1], " : ", speaker_stt[0])
+                    print(speaker_stt[1], " : ", speaker_stt[0])
                     if speaker == '여자':
                         female_list.append(str(speaker_stt[0]))
-                        print(speaker_stt)
                     else:
                         male_list.append(str(speaker_stt[0]))
-                        print(speaker_stt)
 
 
                 else:
@@ -136,15 +130,11 @@ def download():
                     y_copy = y_copy[:22050*5]
                     speaker = predict_speaker(y_copy, sample_rate)
                     speaker_stt.append(str(speaker))
-                    # print(speaker_stt[1] + " : " + speaker_stt[0])
+                    print(speaker_stt[1] + " : " + speaker_stt[0])
                     if speaker == '여자':
                         female_list.append(str(speaker_stt[0]))
-                        print(speaker_stt)
                     else:
                         male_list.append(str(speaker_stt[0]))
-                        print(speaker_stt)
-
-                print('done!')
 
                 save_script += speaker_stt[1] + " : " + speaker_stt[0] + '\n\n'
 
@@ -160,18 +150,6 @@ def download():
 
         return render_template('/download.html')
     
-
-# 파일 다운로드
-# @app.route('/download/')
-# def download_file():
-#     file_name = 'c:/nmb/nada/web/static/test.txt'
-#     return send_file(
-#         file_name,
-#         as_attachment=True, # as_attachment = False 의 경우 파일로 다운로드가 안 되고 화면에 출력이 됨
-#         mimetype='text/txt',
-#         cache_timeout=0 # 지정한 파일이 아니라 과거의 파일이 계속 다운 받는 경우, 캐시메모리의 타임아웃을 0 으로 지정해주면 된다
-#     )
-
 @app.route('/download')
 def download_file():
     return render_template('/download_file.html')
