@@ -41,6 +41,7 @@ audio_file_path = os.path.split(audio_file_path[0])
 # folder_path = audio_file_path[0]
 folder_path = 'C:\\nmb\\nmb_data\\'
 file_name = audio_file_path[1]
+print(folder_path, file_name)
 
 # class intergrate_model : 
 
@@ -126,20 +127,15 @@ model = load_model('C:\\data\\h5\\mobilenet_rmsprop_1.h5')
 
 r = sr.Recognizer()
 save_script = ''
-save_female = ''
-save_male = ''
 
 # STT -> 화자구분
 for i, chunk in enumerate(audio_chunks): 
     speaker_stt = []   
-    speaker_stt_female = []
-    speaker_stt_male = []
-
     out_file = folder_path + "\\"+ str(i) + "_chunk.wav"    # wav 파일 생성 안하고 STT로 바꿀 수 있는 방법은 없을까//?
     chunk.export(out_file, format="wav")
     aaa = sr.AudioFile(out_file)
     with aaa as source :
-        audio = r.record(source)
+        audio = r.record(aaa)
 
     try : 
         # [1] STT & 맞춤법 확인
@@ -153,16 +149,7 @@ for i, chunk in enumerate(audio_chunks):
             y = y[:22050 * 5]  # 5초만 model.predict에 사용할 것임
             speaker = _predict_speaker(y, sampling_rate)
             speaker_stt.append(str(speaker))
-            # print(speaker_stt[1], " : " , speaker_stt[0])
-            if speaker == '여자':
-                speaker_stt_female.append(str(speaker_stt[0]))
-                print(speaker_stt_female)
-            else:
-                speaker_stt_male.append(str(speaker_stt[0]))
-                print(speaker_stt_male)
-            speaker_stt_female.append(str(speaker_stt[0]))
-            speaker_stt_male.append(str(speaker_stt[0]))
-            
+            print(speaker_stt[1], " : " , speaker_stt[0])
 
         else :  # 5초 미만인 파일을 5초 이상으로 만든 후, 5초로 잘라서 model.predict에 넣는다.
             audio_copy = AudioSegment.from_wav(out_file)
@@ -174,40 +161,15 @@ for i, chunk in enumerate(audio_chunks):
             y_copy = y_copy[:22050 * 5]
             speaker = _predict_speaker(y_copy, sampling_rate)
             speaker_stt.append(str(speaker))    # 화자 구분을 못했다는 걸 공백으로 저장
-            # print(speaker_stt[1], " : " , speaker_stt[0])
-            if speaker == '여자':
-                speaker_stt_female.append(str(str(speaker_stt[0])))
-                print(speaker_stt_female)
-            else:
-                speaker_stt_male.append(str(str(speaker_stt[0])))
-                print(speaker_stt_male)
+            print(speaker_stt[1], " : " , speaker_stt[0])
         
         # txt 파일로 저장하기
         save_script += speaker_stt[1] +': ' + speaker_stt[0] + '\n\n'
-
-        f = open(folder_path + "\\stt_script_5s2.txt", 'wt')
-        f.writelines(save_script)
-        f.close()
-        print('all file done')
-        
-
-        save_female += speaker_stt_female
-        p = open(folder_path + '//stt_script_5s2_female.txt', 'wt')
-        p.writelines(save_female)
-        p.close()
-        print('female file done')
-
-        save_male += speaker_stt_male
-        g = open(folder_path + '//stt_script_5s2_male.txt', 'wt')
-        g.writelines(save_male)
-        g.close()
-        print('male file done')
-
+        with open(folder_path + "\\stt_script_5s2.txt", 'wt') as f: f.writelines(save_script) 
 
     except : 
         # 너무 짧은 음성은 STT & 화자구분 pass 
         pass   
-
 
 end = datetime.now()
 time = end - start

@@ -94,15 +94,19 @@ def download():
         save_female = ''
         save_male = ''
 
+        female_list = list()
+        male_list = list()
         for i, chunk in enumerate(audio_chunks):
             speaker_stt = list()
-            female_list = list()
-            male_list = list()
             out_file = folder_path + '/' + str(i) + '_chunk.wav'
             chunk.export(out_file, format = 'wav')
             aaa = sr.AudioFile(out_file)
 
             try:
+                f = open('c:/nmb/nada/web/static/test.txt', 'wt', encoding='utf-8')
+                ff = open('c:/nmb/nada/web/static/test_female.txt', 'wt', encoding='utf-8')
+                fm = open('c:/nmb/nada/web/static/test_male.txt', 'wt', encoding='utf-8')
+
                 stt_text = STT(aaa)
                 speaker_stt.append(str(stt_text))
                 
@@ -143,32 +147,17 @@ def download():
                 print('done!')
 
                 save_script += speaker_stt[1] + " : " + speaker_stt[0] + '\n\n'
-                save_female += female_list[1] + " : " + female_list[0] + '\n\n'
-                save_male += male_list[1] + " : " + male_list[1] + '\n\n'
 
-                print('done!')
-
-                f = open('c:/nmb/nada/web/static/test.txt', 'wt', encoding='utf-8')
                 f.writelines(save_script)
-                f.close()
-
-                ff = open('c:/nmb/nada/web/static/test_female.txt', 'wt', encoding='utf-8')
-                ff.writelines(save_female)
-                ff.close()
-
-                mf = open('c:/nmb/nada/web/static/test_male.txt', 'wt', encoding='utf-8')
-                mf.writelines(save_male)
-                mf.close()
-                
-                print(type(save_script))
-                print(save_script)
-                print(type(save_female))
-                print(save_female)
-                print(type(save_male))
-                print(save_male)
+                ff.writelines('\n\n'.join(female_list))
+                fm.writelines('\n\n'.join(male_list))
 
             except:
                 pass
+        f.close()
+        ff.close()
+        fm.close()
+
         return render_template('/download.html')
     
 
@@ -186,7 +175,7 @@ def download_file():
 # 추론 된 파일 읽기
 @app.route('/read')
 def read_text():
-    return render_template('/read_copy_2.html')
+    return render_template('/read_copy.html')
 
 @app.route('/readAll')
 def read_all():
@@ -200,7 +189,7 @@ def read_female():
 
 @app.route('/readMale')
 def read_male():
-    f = open('c:nmb/nada/web/static/test_male.txt', 'r', encoding='utf-8')
+    f = open('c:/nmb/nada/web/static/test_male.txt', 'r', encoding='utf-8')
     return "</br>".join(f.readlines())
 
 if __name__ == '__main__':
