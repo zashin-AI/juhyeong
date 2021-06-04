@@ -60,12 +60,13 @@ def denoise_tim(
                 sf.write(out_dir + ext_dir + filename[:-4] + '_denoise.wav', reduce_noise, sr) # 노이즈 제거 한 파일 생성
                 print("%s/%s" % (path, filename) + ' done') # 완료 된 경우에 출력
 
-# denoise_tim(
-#     load_dir = 'c:/nmb/nmb_data/audio_data/',
-#     out_dir = 'c:/nmb/nmb_data/audio_data_denoise/',
-#     noise_min = 5000,
-#     noise_max = 15000,
-#     n_fft = 512,
-#     hop_length = 128,
-#     win_length = 512
-# )
+if __name__ == '__main__':
+    denoise_tim(
+        load_dir = 'c:/nmb/nmb_data/audio_data/',
+        out_dir = 'c:/nmb/nmb_data/audio_data_denoise/',
+        noise_min = 5000,
+        noise_max = 15000,
+        n_fft = 512,
+        hop_length = 128,
+        win_length = 512
+    )
