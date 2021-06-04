@@ -22,14 +22,14 @@ x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size=0.8, random_state=23
 )
 
-# scaler = MinMaxScaler()
-scaler = StandardScaler()
+scaler = MinMaxScaler()
+# scaler = StandardScaler()
 scaler.fit(x_train)
 x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
 
 model = PassiveAggressiveClassifier(
-    C = 100
+    C = 10
 )
 model.fit(x_train, y_train)
 
